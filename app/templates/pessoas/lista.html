@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Pessoas - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+        <p class="page-label">
+            Acompanhamento
+        </p>
+
+        <h1 class="page-title">
+            Pessoas
+        </h1>
+
+        <p class="page-description">
+            Consulte membros, congregados e visitantes cadastrados
+            no sistema.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('pessoas.criar') }}"
+        class="button button-light"
+    >
+        + Cadastrar pessoa
+    </a>
+
+</section>
+
+<form method="GET" class="filters">
+
+    <div class="filter-search">
+        <label for="busca" class="form-label">
+            Buscar pessoa
+        </label>
+
+        <input
+            type="text"
+            id="busca"
+            name="busca"
+            class="form-control"
+            placeholder="Digite um nome..."
+            value="{{ busca }}"
+        >
+    </div>
+
+
+    <div class="filter-item">
+        <label for="situacao" class="form-label">
+            Situação
+        </label>
+
+        <select
+            id="situacao"
+            name="situacao"
+            class="form-control"
+        >
+            <option value="">Todas</option>
+
+            <option
+                value="visitante"
+                {% if situacao == "visitante" %}selected{% endif %}
+            >
+                Visitantes
+            </option>
+
+            <option
+                value="congregado"
+                {% if situacao == "congregado" %}selected{% endif %}
+            >
+                Congregados
+            </option>
+
+            <option
+                value="membro"
+                {% if situacao == "membro" %}selected{% endif %}
+            >
+                Membros
+            </option>
+        </select>
+    </div>
+
+
+    <div class="filter-item">
+        <label for="status" class="form-label">
+            Status
+        </label>
+
+        <select
+            id="status"
+            name="status"
+            class="form-control"
+        >
+            <option
+                value="ativos"
+                {% if status == "ativos" %}selected{% endif %}
+            >
+                Ativos
+            </option>
+
+            <option
+                value="inativos"
+                {% if status == "inativos" %}selected{% endif %}
+            >
+                Inativos
+            </option>
+
+            <option
+                value="todos"
+                {% if status == "todos" %}selected{% endif %}
+            >
+                Todos
+            </option>
+        </select>
+    </div>
+
+
+    <div class="filter-actions">
+        <button
+            type="submit"
+            class="button button-primary"
+        >
+            Filtrar
+        </button>
+
+        <a
+            href="{{ url_for('pessoas.listar') }}"
+            class="button button-light"
+        >
+            Limpar
+        </a>
+    </div>
+
+</form>
+
+<section class="panel">
+
+    <div class="panel-header">
+        <h2 class="panel-title">
+            Pessoas cadastradas
+        </h2>
+
+        <span class="muted">
+            {{ pessoas|length }} registros
+        </span>
+    </div>
+
+
+    {% if pessoas %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Situação</th>
+                        <th>Contato</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for pessoa in pessoas %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ pessoa.nome }}
+                            </td>
+
+                            <td>
+                                <span class="tag">
+                                    {{ pessoa.situacao_igreja|capitalize }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if pessoa.telefone %}
+                                    {{ pessoa.telefone }}
+
+                                {% elif pessoa.email %}
+                                    {{ pessoa.email }}
+
+                                {% else %}
+                                    <span class="muted">
+                                        Não informado
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if pessoa.ativo %}
+                                    Ativo
+                                {% else %}
+                                    <span class="tag tag-inactive">
+                                        Inativo
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a
+                                    class="action-link"
+                                    href="{{ url_for(
+                                        'pessoas.detalhe',
+                                        pessoa_id=pessoa.id
+                                    ) }}"
+                                >
+                                    Ver
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>Nenhuma pessoa cadastrada</h2>
+
+            <p>
+                Comece adicionando um membro, congregado ou visitante.
+            </p>
+
+            <a
+                href="{{ url_for('pessoas.criar') }}"
+                class="button button-light"
+            >
+                Cadastrar primeira pessoa
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

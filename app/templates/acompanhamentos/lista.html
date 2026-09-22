@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Acompanhamentos - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+        <p class="page-label">
+            Cuidado pastoral
+        </p>
+
+        <h1 class="page-title">
+            Acompanhamentos
+        </h1>
+
+        <p class="page-description">
+            Visualize os acompanhamentos em andamento
+            e consulte registros já encerrados.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('acompanhamentos.criar') }}"
+        class="button button-light"
+    >
+        + Novo acompanhamento
+    </a>
+
+</section>
+
+
+<form method="GET" class="simple-filter">
+
+    <label for="status" class="form-label">
+        Exibir
+    </label>
+
+    <select
+        name="status"
+        id="status"
+        class="form-control"
+    >
+        <option
+            value="ativos"
+            {% if status == "ativos" %}selected{% endif %}
+        >
+            Ativos
+        </option>
+
+        <option
+            value="encerrados"
+            {% if status == "encerrados" %}selected{% endif %}
+        >
+            Encerrados
+        </option>
+
+        <option
+            value="todos"
+            {% if status == "todos" %}selected{% endif %}
+        >
+            Todos
+        </option>
+    </select>
+
+    <button
+        type="submit"
+        class="button button-primary"
+    >
+        Filtrar
+    </button>
+
+</form>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <h2 class="panel-title">
+            Registros
+        </h2>
+
+        <span class="muted">
+            {{ acompanhamentos|length }}
+            acompanhamento(s)
+        </span>
+
+    </div>
+
+
+    {% if acompanhamentos %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Pessoa</th>
+                        <th>Tipo</th>
+                        <th>Prioridade</th>
+                        <th>Responsável</th>
+                        <th>Início</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for acompanhamento in acompanhamentos %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ acompanhamento.pessoa.nome }}
+                            </td>
+
+                            <td>
+                                {{ acompanhamento.tipo
+                                    |replace("_", " ")
+                                    |capitalize }}
+                            </td>
+
+                            <td>
+                                <span class="tag">
+                                    {{ acompanhamento.prioridade|capitalize }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if acompanhamento.responsavel %}
+                                    {{ acompanhamento.responsavel.nome }}
+                                {% else %}
+                                    <span class="muted">
+                                        Não definido
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ acompanhamento.data_inicio.strftime("%d/%m/%Y") }}
+                            </td>
+
+                            <td>
+                                {{ acompanhamento.status|capitalize }}
+                            </td>
+
+                            <td>
+                                <a
+                                    href="{{ url_for(
+                                        'acompanhamentos.detalhe',
+                                        acompanhamento_id=acompanhamento.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Ver
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>Nenhum acompanhamento</h2>
+
+            <p>
+                Não existem acompanhamentos para esse filtro.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}{{ pessoa.nome }} - SACP{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+        <div class="person-meta">
+            <span class="tag">
+                {{ pessoa.situacao_igreja|capitalize }}
+            </span>
+
+            {% if pessoa.ativo %}
+                <span class="status-dot">
+                    Ativo
+                </span>
+            {% else %}
+                <span class="tag tag-inactive">
+                    Inativo
+                </span>
+            {% endif %}
+        </div>
+
+        <h1 class="page-title">
+            {{ pessoa.nome }}
+        </h1>
+    </div>
+
+
+    <div class="person-header-actions">
+
+        <a
+            href="{{ url_for('pessoas.listar') }}"
+            class="button button-light"
+        >
+            Voltar
+        </a>
+
+        <a
+            href="{{ url_for('pessoas.editar', pessoa_id=pessoa.id) }}"
+            class="button button-primary"
+        >
+            Editar
+        </a>
+
+    </div>
+
+</section>
+
+
+<div class="detail-layout">
+
+    <section class="detail-main">
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <div>
+                    <p class="page-label">
+                        Cadastro
+                    </p>
+
+                    <h2 class="panel-title">
+                        Informações pessoais
+                    </h2>
+                </div>
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Telefone
+                    </span>
+
+                    <span class="info-value">
+                        {{ pessoa.telefone or "Não informado" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        E-mail
+                    </span>
+
+                    <span class="info-value">
+                        {{ pessoa.email or "Não informado" }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Data de nascimento
+                    </span>
+
+                    <span class="info-value">
+                        {% if pessoa.data_nascimento %}
+                            {{ pessoa.data_nascimento.strftime("%d/%m/%Y") }}
+                        {% else %}
+                            Não informada
+                        {% endif %}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Estado civil
+                    </span>
+
+                    <span class="info-value">
+                        {% if pessoa.estado_civil %}
+                            {{ pessoa.estado_civil|capitalize }}
+                        {% else %}
+                            Não informado
+                        {% endif %}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Filhos
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if pessoa.tem_filhos is sameas true %}
+                            Sim
+
+                        {% elif pessoa.tem_filhos is sameas false %}
+                            Não
+
+                        {% else %}
+                            Não informado
+                        {% endif %}
+
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Situação na igreja
+                    </span>
+
+                    <span class="info-value">
+                        {{ pessoa.situacao_igreja|capitalize }}
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="future-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="page-label">
+                        Cuidado pastoral
+                    </p>
+
+                    <h2 class="section-title">
+                        Acompanhamentos
+                    </h2>
+                </div>
+
+                {% if pessoa.ativo %}
+
+                    <a
+                        href="{{ url_for(
+                            'acompanhamentos.criar',
+                            pessoa_id=pessoa.id
+                        ) }}"
+                        class="button button-light"
+                    >
+                        + Novo acompanhamento
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if pessoa.acompanhamentos %}
+
+                <div class="panel">
+
+                    {% for acompanhamento in
+                        pessoa.acompanhamentos
+                        |sort(attribute="data_inicio", reverse=true)
+                    %}
+
+                        <a
+                            href="{{ url_for(
+                                'acompanhamentos.detalhe',
+                                acompanhamento_id=acompanhamento.id
+                            ) }}"
+                            class="followup-row"
+                        >
+
+                            <div>
+
+                                <span class="followup-title">
+                                    {{ acompanhamento.tipo
+                                        |replace("_", " ")
+                                        |capitalize }}
+                                </span>
+
+                                <span class="muted">
+                                    {{ acompanhamento.data_inicio.strftime("%d/%m/%Y") }}
+                                </span>
+
+                            </div>
+
+                            <div class="followup-meta">
+
+                                <span class="tag">
+                                    {{ acompanhamento.prioridade|capitalize }}
+                                </span>
+
+                                <span>
+                                    {{ acompanhamento.status|capitalize }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhum acompanhamento registrado.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Cadastro
+            </p>
+
+            <p class="side-status">
+                {% if pessoa.ativo %}
+                    Pessoa ativa no sistema.
+                {% else %}
+                    Pessoa inativa no sistema.
+                {% endif %}
+            </p>
+
+
+            {% if pessoa.ativo %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'pessoas.inativar',
+                        pessoa_id=pessoa.id
+                    ) }}"
+                >
+
+                    {{ inativar_form.hidden_tag() }}
+
+                    {{ inativar_form.submit(
+                        class="button button-danger button-full"
+                    ) }}
+
+                </form>
+
+            {% else %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'pessoas.reativar',
+                        pessoa_id=pessoa.id
+                    ) }}"
+                >
+
+                    {{ reativar_form.hidden_tag() }}
+
+                    {{ reativar_form.submit(
+                        class="button button-primary button-full"
+                    ) }}
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

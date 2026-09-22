@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+        <p class="page-label">
+            Cuidado pastoral
+        </p>
+
+        <h1 class="page-title">
+            {{ titulo }}
+        </h1>
+
+        <p class="page-description">
+            Registre apenas as informações necessárias
+            para organizar o acompanhamento.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('acompanhamentos.listar') }}"
+        class="button button-light"
+    >
+        Voltar
+    </a>
+
+</section>
+
+
+<form method="POST" class="form-panel">
+
+    {{ form.hidden_tag() }}
+
+    <div class="form-section">
+
+        <div class="form-section-header">
+
+            <p class="page-label">
+                Informações principais
+            </p>
+
+            <h2 class="form-section-title">
+                Acompanhamento
+            </h2>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group form-group-full">
+
+                {{ form.pessoa_id.label(class="form-label") }}
+
+                {{ form.pessoa_id(class="form-control") }}
+
+                {% for erro in form.pessoa_id.errors %}
+                    <span class="form-error">
+                        {{ erro }}
+                    </span>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.tipo.label(class="form-label") }}
+
+                {{ form.tipo(class="form-control") }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.prioridade.label(class="form-label") }}
+
+                {{ form.prioridade(class="form-control") }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.responsavel_id.label(class="form-label") }}
+
+                {{ form.responsavel_id(class="form-control") }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.data_inicio.label(class="form-label") }}
+
+                {{ form.data_inicio(class="form-control") }}
+
+            </div>
+
+
+            <div class="form-group form-group-full">
+
+                {{ form.observacao.label(class="form-label") }}
+
+                {{ form.observacao(
+                    class="form-control form-textarea",
+                    placeholder="Informações breves e necessárias..."
+                ) }}
+
+                <span class="form-help">
+                    Evite registrar detalhes pessoais sensíveis
+                    que não sejam necessários ao acompanhamento.
+                </span>
+
+                {% for erro in form.observacao.errors %}
+                    <span class="form-error">
+                        {{ erro }}
+                    </span>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <a
+            href="{{ url_for('acompanhamentos.listar') }}"
+            class="button button-light"
+        >
+            Cancelar
+        </a>
+
+        {{ form.submit(class="button button-primary") }}
+
+    </div>
+
+</form>
+
+{% endblock %}

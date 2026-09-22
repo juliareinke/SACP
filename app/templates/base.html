@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}SACP{% endblock %}</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="{{ url_for('main.index') }}" class="brand">
+            SACP
+        </a>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('pessoas.listar') }}">Pessoas</a>
+            <a href="{{ url_for('acompanhamentos.listar') }}">Acompanhamentos</a>
+            <a href="#">Tarefas</a>
+        </nav>
+
+        <div class="topbar-action">
+            <a href="{{ url_for('pessoas.criar') }}" class="button button-dark">
+                + Nova pessoa
+            </a>
+        </div>
+    </header>
+
+    <main class="page-container">
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, mensagem in mensagens %}
+                    <div class="flash flash-{{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</body>
+</html>

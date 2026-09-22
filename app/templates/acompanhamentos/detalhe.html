@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ acompanhamento.pessoa.nome }} - SACP
+{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="tag">
+                {{ acompanhamento.tipo
+                    |replace("_", " ")
+                    |capitalize }}
+            </span>
+
+            <span class="tag">
+                {{ acompanhamento.prioridade|capitalize }}
+            </span>
+
+        </div>
+
+        <p class="page-label">
+            Acompanhamento
+        </p>
+
+        <h1 class="page-title">
+            {{ acompanhamento.pessoa.nome }}
+        </h1>
+
+    </div>
+
+
+    <div class="person-header-actions">
+
+        <a
+            href="{{ url_for(
+                'pessoas.detalhe',
+                pessoa_id=acompanhamento.pessoa.id
+            ) }}"
+            class="button button-light"
+        >
+            Ver pessoa
+        </a>
+
+        {% if acompanhamento.status == "ativo" %}
+
+            <a
+                href="{{ url_for(
+                    'acompanhamentos.editar',
+                    acompanhamento_id=acompanhamento.id
+                ) }}"
+                class="button button-primary"
+            >
+                Editar
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<div class="detail-layout">
+
+    <section class="detail-main">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <p class="page-label">
+                        Informações
+                    </p>
+
+                    <h2 class="panel-title">
+                        Dados do acompanhamento
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Tipo
+                    </span>
+
+                    <span class="info-value">
+                        {{ acompanhamento.tipo
+                            |replace("_", " ")
+                            |capitalize }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Prioridade
+                    </span>
+
+                    <span class="info-value">
+                        {{ acompanhamento.prioridade|capitalize }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Responsável
+                    </span>
+
+                    <span class="info-value">
+                        {% if acompanhamento.responsavel %}
+                            {{ acompanhamento.responsavel.nome }}
+                        {% else %}
+                            Não definido
+                        {% endif %}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Data de início
+                    </span>
+
+                    <span class="info-value">
+                        {{ acompanhamento.data_inicio.strftime("%d/%m/%Y") }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Status
+                    </span>
+
+                    <span class="info-value">
+                        {{ acompanhamento.status|capitalize }}
+                    </span>
+                </div>
+
+
+                <div class="info-item">
+                    <span class="info-label">
+                        Encerramento
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if acompanhamento.data_encerramento %}
+
+                            {{ acompanhamento.data_encerramento.strftime("%d/%m/%Y") }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="observation-panel">
+
+            <p class="page-label">
+                Observação
+            </p>
+
+            {% if acompanhamento.observacao %}
+
+                <p>
+                    {{ acompanhamento.observacao }}
+                </p>
+
+            {% else %}
+
+                <p class="muted">
+                    Nenhuma observação registrada.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="future-section">
+
+            <p class="page-label">
+                Histórico
+            </p>
+
+            <h2 class="section-title">
+                Linha do tempo
+            </h2>
+
+            <div class="placeholder-panel">
+                <p>
+                    Os contatos, visitas e demais registros
+                    aparecerão aqui.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Status
+            </p>
+
+            <p class="side-status">
+
+                {% if acompanhamento.status == "ativo" %}
+
+                    Este acompanhamento está em andamento.
+
+                {% else %}
+
+                    Este acompanhamento foi encerrado.
+
+                {% endif %}
+
+            </p>
+
+
+            {% if acompanhamento.status == "ativo" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'acompanhamentos.encerrar',
+                        acompanhamento_id=acompanhamento.id
+                    ) }}"
+                >
+
+                    {{ encerrar_form.hidden_tag() }}
+
+                    {{ encerrar_form.submit(
+                        class="button button-danger button-full"
+                    ) }}
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}
