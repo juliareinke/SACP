@@ -777,3 +777,45 @@ select.form-control {
 .future-section {
     margin-top: 48px;
 }
+
+/* LOGIN */
+
+.login-wrapper {
+    min-height: calc(100vh - 160px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: min(100%, 460px);
+
+    padding: 40px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.login-heading {
+    margin-bottom: 32px;
+}
+
+.login-title {
+    margin: 0;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 46px;
+    font-weight: normal;
+    letter-spacing: -1px;
+}
+
+.login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.login-action {
+    margin-top: 6px;
+}

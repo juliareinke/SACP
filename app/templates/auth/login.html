@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar - SACP{% endblock %}
+
+{% block content %}
+
+<div class="login-wrapper">
+
+    <section class="login-card">
+
+        <div class="login-heading">
+            <p class="page-label">
+                Sistema de Acompanhamento
+            </p>
+
+            <h1 class="login-title">
+                Bem-vindo.
+            </h1>
+
+            <p class="page-description">
+                Entre com suas credenciais para acessar o sistema.
+            </p>
+        </div>
+
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+
+                {{ form.email.label(class="form-label") }}
+
+                {{ form.email(
+                    class="form-control",
+                    placeholder="seu@email.com"
+                ) }}
+
+                {% for erro in form.email.errors %}
+                    <span class="form-error">
+                        {{ erro }}
+                    </span>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.senha.label(class="form-label") }}
+
+                {{ form.senha(
+                    class="form-control",
+                    placeholder="Sua senha"
+                ) }}
+
+                {% for erro in form.senha.errors %}
+                    <span class="form-error">
+                        {{ erro }}
+                    </span>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="login-action">
+
+                {{ form.submit(
+                    class="button button-primary button-full"
+                ) }}
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+{% endblock %}
