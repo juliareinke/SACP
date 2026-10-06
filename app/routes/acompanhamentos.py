@@ -1,8 +1,9 @@
 from datetime import date
 from flask import Blueprint, flash, redirect, render_template, request,url_for
+from flask_login import login_required, current_user
 from app import db
-from app.forms.acompanhamento import AcompanhamentoForm, EncerrarAcompanhamentoForm
-from app.models import Acompanhamento, Pessoa, Usuario
+from app.forms.acompanhamento import AcompanhamentoForm, EncerrarAcompanhamentoForm, RegistroAcompanhamentoForm
+from app.models import Acompanhamento, Pessoa, Usuario, RegistroAcompanhamento
 
 
 acompanhamentos_bp = Blueprint(
@@ -37,6 +38,7 @@ def configurar_choices(form):
 
 
 @acompanhamentos_bp.route("/")
+@login_required
 def listar():
     status = request.args.get("status", "ativos")
 
@@ -66,6 +68,7 @@ def listar():
 
 
 @acompanhamentos_bp.route("/novo", methods=["GET", "POST"])
+@login_required
 def criar():
     form = AcompanhamentoForm()
     configurar_choices(form)
@@ -123,6 +126,7 @@ def criar():
 
 
 @acompanhamentos_bp.route("/<int:acompanhamento_id>")
+@login_required
 def detalhe(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -142,6 +146,7 @@ def detalhe(acompanhamento_id):
     "/<int:acompanhamento_id>/editar",
     methods=["GET", "POST"]
 )
+@login_required
 def editar(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -205,6 +210,7 @@ def editar(acompanhamento_id):
     "/<int:acompanhamento_id>/encerrar",
     methods=["POST"]
 )
+@login_required
 def encerrar(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -229,4 +235,64 @@ def encerrar(acompanhamento_id):
             "acompanhamentos.detalhe",
             acompanhamento_id=acompanhamento.id
         )
+    )
+    
+
+@acompanhamentos_bp.route(
+    "/<int:acompanhamento_id>/registros/novo",
+    methods=["GET", "POST"]
+)
+@login_required
+def criar_registro(acompanhamento_id):
+    acompanhamento = db.get_or_404(
+        Acompanhamento,
+        acompanhamento_id
+    )
+
+    if acompanhamento.status != "ativo":
+        flash(
+            "Não é possível adicionar registros a um acompanhamento encerrado.",
+            "error"
+        )
+
+        return redirect(
+            url_for(
+                "acompanhamentos.detalhe",
+                acompanhamento_id=acompanhamento.id
+            )
+        )
+
+    form = RegistroAcompanhamentoForm()
+
+    if form.validate_on_submit():
+        registro = RegistroAcompanhamento(
+            acompanhamento_id=acompanhamento.id,
+            usuario_id=current_user.id,
+            tipo=form.tipo.data,
+            observacao=(
+                form.observacao.data.strip()
+                if form.observacao.data
+                else None
+            )
+        )
+
+        db.session.add(registro)
+        db.session.commit()
+
+        flash(
+            "Registro adicionado ao acompanhamento.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "acompanhamentos.detalhe",
+                acompanhamento_id=acompanhamento.id
+            )
+        )
+
+    return render_template(
+        "acompanhamentos/registro_formulario.html",
+        acompanhamento=acompanhamento,
+        form=form
     )

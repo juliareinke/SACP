@@ -200,20 +200,100 @@
 
         <div class="future-section">
 
-            <p class="page-label">
-                Histórico
-            </p>
+            <div class="section-heading">
 
-            <h2 class="section-title">
-                Linha do tempo
-            </h2>
+                <div>
+                    <p class="page-label">
+                        Histórico
+                    </p>
 
-            <div class="placeholder-panel">
-                <p>
-                    Os contatos, visitas e demais registros
-                    aparecerão aqui.
-                </p>
+                    <h2 class="section-title">
+                        Linha do tempo
+                    </h2>
+                </div>
+
+
+                {% if acompanhamento.status == "ativo" %}
+
+                    <a
+                        href="{{ url_for(
+                            'acompanhamentos.criar_registro',
+                            acompanhamento_id=acompanhamento.id
+                        ) }}"
+                        class="button button-light"
+                    >
+                        + Novo registro
+                    </a>
+
+                {% endif %}
+
             </div>
+
+
+            {% if acompanhamento.registros %}
+
+                <div class="timeline">
+
+                    {% for registro in
+                        acompanhamento.registros
+                        |sort(attribute="data", reverse=true)
+                    %}
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-marker"></div>
+
+                            <div class="timeline-content">
+
+                                <div class="timeline-heading">
+
+                                    <span class="timeline-type">
+                                        {{ registro.tipo
+                                            |replace("_", " ")
+                                            |capitalize }}
+                                    </span>
+
+                                    <span class="timeline-date">
+                                        {{ registro.data.strftime(
+                                            "%d/%m/%Y às %H:%M"
+                                        ) }}
+                                    </span>
+
+                                </div>
+
+
+                                {% if registro.observacao %}
+
+                                    <p class="timeline-text">
+                                        {{ registro.observacao }}
+                                    </p>
+
+                                {% endif %}
+
+
+                                <span class="timeline-user">
+                                    Registrado por {{ registro.usuario.nome }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhum registro realizado até o momento.
+                    </p>
+
+                </div>
+
+            {% endif %}
 
         </div>
 

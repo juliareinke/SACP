@@ -60,3 +60,28 @@ class AcompanhamentoForm(FlaskForm):
 
 class EncerrarAcompanhamentoForm(FlaskForm):
     submit = SubmitField("Encerrar acompanhamento")
+    
+
+class RegistroAcompanhamentoForm(FlaskForm):
+    tipo = SelectField(
+        "Tipo de registro",
+        choices=[
+            ("whatsapp", "Contato por WhatsApp"),
+            ("ligacao", "Ligação"),
+            ("visita", "Visita"),
+            ("retorno", "Retorno"),
+            ("encaminhamento", "Encaminhamento"),
+            ("outro", "Outro"),
+        ],
+        validators=[DataRequired()]
+    )
+
+    observacao = TextAreaField(
+        "Observação",
+        validators=[
+            Optional(),
+            Length(max=1000)
+        ]
+    )
+
+    submit = SubmitField("Adicionar registro")

@@ -171,6 +171,53 @@ textarea {
     line-height: 1.6;
 }
 
+/* USUÁRIO LOGADO */
+
+.topbar-user {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    line-height: 1.2;
+}
+
+.user-name {
+    font-size: 13px;
+}
+
+.user-role {
+    margin-top: 3px;
+
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    opacity: 0.6;
+}
+
+.logout-button {
+    padding: 0;
+
+    color: white;
+    background: none;
+
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.logout-button:hover {
+    border-color: white;
+}
 
 /* PAINEL */
 
@@ -670,6 +717,103 @@ select.form-control {
 
     .info-item:nth-child(odd) {
         border-right: 0;
+    }
+
+}
+
+/* LINHA DO TEMPO */
+
+.timeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    padding: 8px 28px;
+}
+
+.timeline-item {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 18px;
+
+    padding: 28px 0;
+}
+
+.timeline-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.timeline-marker {
+    position: relative;
+
+    width: 10px;
+    height: 10px;
+
+    margin-top: 5px;
+
+    background: var(--text);
+    border-radius: 50%;
+}
+
+.timeline-marker::after {
+    content: "";
+
+    position: absolute;
+
+    top: 14px;
+    left: 4px;
+
+    width: 1px;
+    height: calc(100% + 28px);
+
+    background: var(--border-soft);
+}
+
+.timeline-item:last-child .timeline-marker::after {
+    display: none;
+}
+
+.timeline-content {
+    min-width: 0;
+}
+
+.timeline-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.timeline-type {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+}
+
+.timeline-date,
+.timeline-user {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.timeline-text {
+    max-width: 700px;
+
+    margin: 12px 0;
+
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+
+    .timeline {
+        padding: 4px 20px;
+    }
+
+    .timeline-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
     }
 
 }

@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required
 from app import db
 from app.forms.pessoa import PessoaForm, InativarPessoaForm, ReativarPessoaForm
 from app.models import Pessoa
@@ -22,6 +23,7 @@ def converter_tem_filhos(valor):
 
 
 @pessoas_bp.route("/")
+@login_required
 def listar():
     busca = request.args.get("busca", "").strip()
     situacao = request.args.get("situacao", "")
@@ -59,6 +61,7 @@ def listar():
 
 
 @pessoas_bp.route("/nova", methods=["GET", "POST"])
+@login_required
 def criar():
     form = PessoaForm()
 
@@ -90,6 +93,7 @@ def criar():
 
 
 @pessoas_bp.route("/<int:pessoa_id>")
+@login_required
 def detalhe(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
 
@@ -105,6 +109,7 @@ def detalhe(pessoa_id):
 
 
 @pessoas_bp.route("/<int:pessoa_id>/editar", methods=["GET", "POST"])
+@login_required
 def editar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
 
@@ -161,6 +166,7 @@ def editar(pessoa_id):
 
 
 @pessoas_bp.route("/<int:pessoa_id>/inativar", methods=["POST"])
+@login_required
 def inativar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
     form = InativarPessoaForm()
@@ -177,6 +183,7 @@ def inativar(pessoa_id):
     
     
 @pessoas_bp.route("/<int:pessoa_id>/reativar", methods=["POST"])
+@login_required
 def reativar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
     form = ReativarPessoaForm()

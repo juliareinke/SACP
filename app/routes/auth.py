@@ -1,10 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, url_for
-from flask_login import (
-    current_user,
-    login_user,
-    logout_user,
-)
-
+from flask_login import current_user, login_user, logout_user, login_required
 from app import db
 from app.forms.auth import LoginForm
 from app.models import Usuario
@@ -57,6 +52,7 @@ def login():
 
 
 @auth_bp.route("/logout", methods=["POST"])
+@login_required
 def logout():
     logout_user()
 
