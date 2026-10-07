@@ -6,6 +6,7 @@
 
 {% block content %}
 
+
 <section class="person-header">
 
     <div>
@@ -13,9 +14,11 @@
         <div class="person-meta">
 
             <span class="tag">
+
                 {{ acompanhamento.tipo
                     |replace("_", " ")
                     |capitalize }}
+
             </span>
 
             <span class="tag">
@@ -23,6 +26,7 @@
             </span>
 
         </div>
+
 
         <p class="page-label">
             Acompanhamento
@@ -47,6 +51,7 @@
             Ver pessoa
         </a>
 
+
         {% if acompanhamento.status == "ativo" %}
 
             <a
@@ -70,11 +75,15 @@
 
     <section class="detail-main">
 
+
+        <!-- DADOS DO ACOMPANHAMENTO -->
+
         <div class="panel">
 
             <div class="panel-header">
 
                 <div>
+
                     <p class="page-label">
                         Informações
                     </p>
@@ -82,6 +91,7 @@
                     <h2 class="panel-title">
                         Dados do acompanhamento
                     </h2>
+
                 </div>
 
             </div>
@@ -90,19 +100,24 @@
             <div class="info-grid">
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Tipo
                     </span>
 
                     <span class="info-value">
+
                         {{ acompanhamento.tipo
                             |replace("_", " ")
                             |capitalize }}
+
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Prioridade
                     </span>
@@ -110,36 +125,52 @@
                     <span class="info-value">
                         {{ acompanhamento.prioridade|capitalize }}
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Responsável
                     </span>
 
                     <span class="info-value">
+
                         {% if acompanhamento.responsavel %}
+
                             {{ acompanhamento.responsavel.nome }}
+
                         {% else %}
+
                             Não definido
+
                         {% endif %}
+
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Data de início
                     </span>
 
                     <span class="info-value">
-                        {{ acompanhamento.data_inicio.strftime("%d/%m/%Y") }}
+
+                        {{ acompanhamento.data_inicio.strftime(
+                            "%d/%m/%Y"
+                        ) }}
+
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Status
                     </span>
@@ -147,10 +178,12 @@
                     <span class="info-value">
                         {{ acompanhamento.status|capitalize }}
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Encerramento
                     </span>
@@ -159,7 +192,9 @@
 
                         {% if acompanhamento.data_encerramento %}
 
-                            {{ acompanhamento.data_encerramento.strftime("%d/%m/%Y") }}
+                            {{ acompanhamento.data_encerramento.strftime(
+                                "%d/%m/%Y"
+                            ) }}
 
                         {% else %}
 
@@ -168,6 +203,7 @@
                         {% endif %}
 
                     </span>
+
                 </div>
 
             </div>
@@ -175,11 +211,14 @@
         </div>
 
 
+        <!-- OBSERVAÇÃO -->
+
         <div class="observation-panel">
 
             <p class="page-label">
                 Observação
             </p>
+
 
             {% if acompanhamento.observacao %}
 
@@ -198,11 +237,135 @@
         </div>
 
 
+        <!-- TAREFAS -->
+
+        <div class="future-section">
+
+            {% set tarefas_pendentes =
+                acompanhamento.tarefas
+                |selectattr("status", "equalto", "pendente")
+                |sort(attribute="prazo")
+                |list
+            %}
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="page-label">
+                        Pendências
+                    </p>
+
+                    <h2 class="section-title">
+                        Tarefas
+                    </h2>
+
+                </div>
+
+
+                {% if acompanhamento.status == "ativo" %}
+
+                    <a
+                        href="{{ url_for(
+                            'tarefas.criar',
+                            acompanhamento_id=acompanhamento.id
+                        ) }}"
+                        class="button button-light"
+                    >
+                        + Nova tarefa
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if tarefas_pendentes %}
+
+                <div class="panel">
+
+                    {% for tarefa in tarefas_pendentes %}
+
+                        {% set atrasada =
+                            tarefa.prazo < hoje
+                        %}
+
+                        <a
+                            href="{{ url_for(
+                                'tarefas.detalhe',
+                                tarefa_id=tarefa.id
+                            ) }}"
+                            class="task-row"
+                        >
+
+                            <div>
+
+                                <span class="task-title">
+                                    {{ tarefa.titulo }}
+                                </span>
+
+                                <span class="muted">
+
+                                    {{ tarefa.responsavel.nome }}
+
+                                    ·
+
+                                    {{ tarefa.prazo.strftime(
+                                        "%d/%m/%Y"
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                {% if atrasada %}
+
+                                    <span class="tag task-overdue">
+                                        Atrasada
+                                    </span>
+
+                                {% endif %}
+
+
+                                <span class="tag">
+                                    {{ tarefa.prioridade|capitalize }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhuma tarefa pendente neste acompanhamento.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- LINHA DO TEMPO -->
+
         <div class="future-section">
 
             <div class="section-heading">
 
                 <div>
+
                     <p class="page-label">
                         Histórico
                     </p>
@@ -210,6 +373,7 @@
                     <h2 class="section-title">
                         Linha do tempo
                     </h2>
+
                 </div>
 
 
@@ -243,20 +407,26 @@
 
                             <div class="timeline-marker"></div>
 
+
                             <div class="timeline-content">
 
                                 <div class="timeline-heading">
 
                                     <span class="timeline-type">
+
                                         {{ registro.tipo
                                             |replace("_", " ")
                                             |capitalize }}
+
                                     </span>
 
+
                                     <span class="timeline-date">
+
                                         {{ registro.data.strftime(
                                             "%d/%m/%Y às %H:%M"
                                         ) }}
+
                                     </span>
 
                                 </div>
@@ -272,7 +442,10 @@
 
 
                                 <span class="timeline-user">
-                                    Registrado por {{ registro.usuario.nome }}
+
+                                    Registrado por
+                                    {{ registro.usuario.nome }}
+
                                 </span>
 
                             </div>
@@ -300,6 +473,8 @@
     </section>
 
 
+    <!-- SIDEBAR -->
+
     <aside class="detail-sidebar">
 
         <div class="side-panel">
@@ -307,6 +482,7 @@
             <p class="page-label">
                 Status
             </p>
+
 
             <p class="side-status">
 

@@ -7,25 +7,34 @@
 <section class="person-header">
 
     <div>
+
         <div class="person-meta">
+
             <span class="tag">
                 {{ pessoa.situacao_igreja|capitalize }}
             </span>
 
             {% if pessoa.ativo %}
+
                 <span class="status-dot">
                     Ativo
                 </span>
+
             {% else %}
+
                 <span class="tag tag-inactive">
                     Inativo
                 </span>
+
             {% endif %}
+
         </div>
+
 
         <h1 class="page-title">
             {{ pessoa.nome }}
         </h1>
+
     </div>
 
 
@@ -39,7 +48,10 @@
         </a>
 
         <a
-            href="{{ url_for('pessoas.editar', pessoa_id=pessoa.id) }}"
+            href="{{ url_for(
+                'pessoas.editar',
+                pessoa_id=pessoa.id
+            ) }}"
             class="button button-primary"
         >
             Editar
@@ -54,10 +66,14 @@
 
     <section class="detail-main">
 
+        <!-- INFORMAÇÕES PESSOAIS -->
+
         <div class="panel">
 
             <div class="panel-header">
+
                 <div>
+
                     <p class="page-label">
                         Cadastro
                     </p>
@@ -65,13 +81,16 @@
                     <h2 class="panel-title">
                         Informações pessoais
                     </h2>
+
                 </div>
+
             </div>
 
 
             <div class="info-grid">
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Telefone
                     </span>
@@ -79,10 +98,12 @@
                     <span class="info-value">
                         {{ pessoa.telefone or "Não informado" }}
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         E-mail
                     </span>
@@ -90,40 +111,58 @@
                     <span class="info-value">
                         {{ pessoa.email or "Não informado" }}
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Data de nascimento
                     </span>
 
                     <span class="info-value">
+
                         {% if pessoa.data_nascimento %}
+
                             {{ pessoa.data_nascimento.strftime("%d/%m/%Y") }}
+
                         {% else %}
+
                             Não informada
+
                         {% endif %}
+
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Estado civil
                     </span>
 
                     <span class="info-value">
+
                         {% if pessoa.estado_civil %}
+
                             {{ pessoa.estado_civil|capitalize }}
+
                         {% else %}
+
                             Não informado
+
                         {% endif %}
+
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Filhos
                     </span>
@@ -131,20 +170,26 @@
                     <span class="info-value">
 
                         {% if pessoa.tem_filhos is sameas true %}
+
                             Sim
 
                         {% elif pessoa.tem_filhos is sameas false %}
+
                             Não
 
                         {% else %}
+
                             Não informado
+
                         {% endif %}
 
                     </span>
+
                 </div>
 
 
                 <div class="info-item">
+
                     <span class="info-label">
                         Situação na igreja
                     </span>
@@ -152,6 +197,7 @@
                     <span class="info-value">
                         {{ pessoa.situacao_igreja|capitalize }}
                     </span>
+
                 </div>
 
             </div>
@@ -159,11 +205,14 @@
         </div>
 
 
+        <!-- ACOMPANHAMENTOS -->
+
         <div class="future-section">
 
             <div class="section-heading">
 
                 <div>
+
                     <p class="page-label">
                         Cuidado pastoral
                     </p>
@@ -171,7 +220,9 @@
                     <h2 class="section-title">
                         Acompanhamentos
                     </h2>
+
                 </div>
+
 
                 {% if pessoa.ativo %}
 
@@ -210,16 +261,23 @@
                             <div>
 
                                 <span class="followup-title">
+
                                     {{ acompanhamento.tipo
                                         |replace("_", " ")
                                         |capitalize }}
+
                                 </span>
 
                                 <span class="muted">
-                                    {{ acompanhamento.data_inicio.strftime("%d/%m/%Y") }}
+
+                                    {{ acompanhamento.data_inicio.strftime(
+                                        "%d/%m/%Y"
+                                    ) }}
+
                                 </span>
 
                             </div>
+
 
                             <div class="followup-meta">
 
@@ -253,8 +311,126 @@
 
         </div>
 
+
+        <!-- TAREFAS -->
+
+        <div class="future-section">
+
+            {% set tarefas_pendentes =
+                pessoa.tarefas
+                |selectattr("status", "equalto", "pendente")
+                |sort(attribute="prazo")
+                |list
+            %}
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="page-label">
+                        Pendências
+                    </p>
+
+                    <h2 class="section-title">
+                        Tarefas
+                    </h2>
+
+                </div>
+
+
+                {% if pessoa.ativo %}
+
+                    <a
+                        href="{{ url_for(
+                            'tarefas.criar',
+                            pessoa_id=pessoa.id
+                        ) }}"
+                        class="button button-light"
+                    >
+                        + Nova tarefa
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if tarefas_pendentes %}
+
+                <div class="panel">
+
+                    {% for tarefa in tarefas_pendentes %}
+
+                        {% set atrasada =
+                            tarefa.prazo < hoje
+                        %}
+
+                        <a
+                            href="{{ url_for(
+                                'tarefas.detalhe',
+                                tarefa_id=tarefa.id
+                            ) }}"
+                            class="task-row"
+                        >
+
+                            <div>
+
+                                <span class="task-title">
+                                    {{ tarefa.titulo }}
+                                </span>
+
+                                <span class="muted">
+
+                                    Prazo
+                                    {{ tarefa.prazo.strftime("%d/%m/%Y") }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="task-meta">
+
+                                {% if atrasada %}
+
+                                    <span class="tag task-overdue">
+                                        Atrasada
+                                    </span>
+
+                                {% endif %}
+
+
+                                <span class="tag">
+                                    {{ tarefa.prioridade|capitalize }}
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhuma tarefa pendente.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
     </section>
 
+
+    <!-- SIDEBAR -->
 
     <aside class="detail-sidebar">
 
@@ -265,11 +441,17 @@
             </p>
 
             <p class="side-status">
+
                 {% if pessoa.ativo %}
+
                     Pessoa ativa no sistema.
+
                 {% else %}
+
                     Pessoa inativa no sistema.
+
                 {% endif %}
+
             </p>
 
 

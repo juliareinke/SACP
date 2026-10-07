@@ -963,3 +963,58 @@ select.form-control {
 .login-action {
     margin-top: 6px;
 }
+
+/* TAREFAS */
+
+.task-overdue {
+    font-weight: 600;
+    border-color: #8f1d1d;
+}
+
+/* TAREFAS INTEGRADAS */
+
+.task-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 20px;
+
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.task-row:last-child {
+    border-bottom: 0;
+}
+
+.task-row:hover {
+    background: var(--background);
+}
+
+.task-row > div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.task-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+}
+
+.task-meta {
+    justify-content: flex-end;
+    font-size: 13px;
+}
+
+@media (max-width: 650px) {
+    .task-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .task-row > div {
+        flex-wrap: wrap;
+    }
+}

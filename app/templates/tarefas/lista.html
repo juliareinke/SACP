@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Tarefas - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+        <p class="page-label">
+            Organização
+        </p>
+
+        <h1 class="page-title">
+            Tarefas
+        </h1>
+
+        <p class="page-description">
+            Acompanhe contatos, visitas e outras ações
+            que precisam ser realizadas.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('tarefas.criar') }}"
+        class="button button-light"
+    >
+        + Nova tarefa
+    </a>
+
+</section>
+
+
+<form method="GET" class="simple-filter">
+
+    <div class="filter-item">
+
+        <label for="status" class="form-label">
+            Exibir
+        </label>
+
+        <select
+            id="status"
+            name="status"
+            class="form-control"
+        >
+
+            <option
+                value="pendentes"
+                {% if status == "pendentes" %}selected{% endif %}
+            >
+                Pendentes
+            </option>
+
+            <option
+                value="atrasadas"
+                {% if status == "atrasadas" %}selected{% endif %}
+            >
+                Atrasadas
+            </option>
+
+            <option
+                value="concluidas"
+                {% if status == "concluidas" %}selected{% endif %}
+            >
+                Concluídas
+            </option>
+
+            <option
+                value="todas"
+                {% if status == "todas" %}selected{% endif %}
+            >
+                Todas
+            </option>
+
+        </select>
+
+    </div>
+
+    <button
+        type="submit"
+        class="button button-primary"
+    >
+        Filtrar
+    </button>
+
+</form>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <h2 class="panel-title">
+            Tarefas
+        </h2>
+
+        <span class="muted">
+            {{ tarefas|length }} registro(s)
+        </span>
+
+    </div>
+
+
+    {% if tarefas %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Tarefa</th>
+                        <th>Pessoa</th>
+                        <th>Responsável</th>
+                        <th>Prioridade</th>
+                        <th>Prazo</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for tarefa in tarefas %}
+
+                        {% set atrasada =
+                            tarefa.status == "pendente"
+                            and tarefa.prazo < hoje
+                        %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ tarefa.titulo }}
+                            </td>
+
+                            <td>
+                                {{ tarefa.pessoa.nome }}
+                            </td>
+
+                            <td>
+                                {{ tarefa.responsavel.nome }}
+                            </td>
+
+                            <td>
+                                <span class="tag">
+                                    {{ tarefa.prioridade|capitalize }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ tarefa.prazo.strftime("%d/%m/%Y") }}
+                            </td>
+
+                            <td>
+
+                                {% if tarefa.status == "concluida" %}
+
+                                    <span class="tag">
+                                        Concluída
+                                    </span>
+
+                                {% elif atrasada %}
+
+                                    <span class="tag task-overdue">
+                                        Atrasada
+                                    </span>
+
+                                {% else %}
+
+                                    Pendente
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                <a
+                                    href="{{ url_for(
+                                        'tarefas.detalhe',
+                                        tarefa_id=tarefa.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Ver
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>Nenhuma tarefa encontrada</h2>
+
+            <p>
+                Não existem tarefas para esse filtro.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

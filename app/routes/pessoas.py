@@ -3,7 +3,7 @@ from flask_login import login_required
 from app import db
 from app.forms.pessoa import PessoaForm, InativarPessoaForm, ReativarPessoaForm
 from app.models import Pessoa
-
+from datetime import date
 
 pessoas_bp = Blueprint(
     "pessoas",
@@ -104,7 +104,8 @@ def detalhe(pessoa_id):
         "pessoas/detalhe.html",
         pessoa=pessoa,
         inativar_form=inativar_form,
-        reativar_form=reativar_form
+        reativar_form=reativar_form,
+        hoje=date.today()
     )
 
 

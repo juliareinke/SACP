@@ -138,7 +138,8 @@ def detalhe(acompanhamento_id):
     return render_template(
         "acompanhamentos/detalhe.html",
         acompanhamento=acompanhamento,
-        encerrar_form=encerrar_form
+        encerrar_form=encerrar_form,
+        hoje=date.today()
     )
 
 

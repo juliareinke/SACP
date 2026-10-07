@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tarefa.titulo }} - SACP{% endblock %}
+
+{% block content %}
+
+{% set atrasada =
+    tarefa.status == "pendente"
+    and tarefa.prazo < hoje
+%}
+
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="tag">
+                {{ tarefa.prioridade|capitalize }}
+            </span>
+
+            {% if tarefa.status == "concluida" %}
+
+                <span class="tag">
+                    Concluída
+                </span>
+
+            {% elif atrasada %}
+
+                <span class="tag task-overdue">
+                    Atrasada
+                </span>
+
+            {% else %}
+
+                <span class="status-dot">
+                    Pendente
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <p class="page-label">
+            Tarefa
+        </p>
+
+        <h1 class="page-title">
+            {{ tarefa.titulo }}
+        </h1>
+
+    </div>
+
+
+    <div class="person-header-actions">
+
+        <a
+            href="{{ url_for('tarefas.listar') }}"
+            class="button button-light"
+        >
+            Voltar
+        </a>
+
+        {% if tarefa.status == "pendente" %}
+
+            <a
+                href="{{ url_for(
+                    'tarefas.editar',
+                    tarefa_id=tarefa.id
+                ) }}"
+                class="button button-primary"
+            >
+                Editar
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<div class="detail-layout">
+
+    <section class="detail-main">
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <p class="page-label">
+                        Informações
+                    </p>
+
+                    <h2 class="panel-title">
+                        Dados da tarefa
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Pessoa
+                    </span>
+
+                    <span class="info-value">
+                        {{ tarefa.pessoa.nome }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Responsável
+                    </span>
+
+                    <span class="info-value">
+                        {{ tarefa.responsavel.nome }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Prazo
+                    </span>
+
+                    <span class="info-value">
+                        {{ tarefa.prazo.strftime("%d/%m/%Y") }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Prioridade
+                    </span>
+
+                    <span class="info-value">
+                        {{ tarefa.prioridade|capitalize }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Acompanhamento
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if tarefa.acompanhamento %}
+
+                            <a
+                                class="action-link"
+                                href="{{ url_for(
+                                    'acompanhamentos.detalhe',
+                                    acompanhamento_id=tarefa.acompanhamento.id
+                                ) }}"
+                            >
+                                Ver acompanhamento
+                            </a>
+
+                        {% else %}
+
+                            Não vinculado
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Status
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if tarefa.status == "concluida" %}
+                            Concluída
+                        {% elif atrasada %}
+                            Atrasada
+                        {% else %}
+                            Pendente
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="observation-panel">
+
+            <p class="page-label">
+                Descrição
+            </p>
+
+            {% if tarefa.descricao %}
+
+                <p>
+                    {{ tarefa.descricao }}
+                </p>
+
+            {% else %}
+
+                <p class="muted">
+                    Nenhuma descrição registrada.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Tarefa
+            </p>
+
+            {% if tarefa.status == "pendente" %}
+
+                <p class="side-status">
+
+                    {% if atrasada %}
+                        O prazo desta tarefa já passou.
+                    {% else %}
+                        Esta tarefa está pendente.
+                    {% endif %}
+
+                </p>
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'tarefas.concluir',
+                        tarefa_id=tarefa.id
+                    ) }}"
+                >
+
+                    {{ concluir_form.hidden_tag() }}
+
+                    {{ concluir_form.submit(
+                        class="button button-primary button-full"
+                    ) }}
+
+                </form>
+
+            {% else %}
+
+                <p class="side-status">
+                    Esta tarefa foi concluída.
+                </p>
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'tarefas.reabrir',
+                        tarefa_id=tarefa.id
+                    ) }}"
+                >
+
+                    {{ reabrir_form.hidden_tag() }}
+
+                    {{ reabrir_form.submit(
+                        class="button button-light button-full"
+                    ) }}
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}
