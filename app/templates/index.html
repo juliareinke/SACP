@@ -1,12 +1,541 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SACP</title>
-</head>
-<body>
-    <h1>Sistema de Acompanhamento e Cuidado Pastoral</h1>
-    <p>Projeto iniciado com sucesso.</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Início - SACP{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-heading">
+
+    <div>
+
+        <p class="page-label">
+            Visão geral
+        </p>
+
+        <h1 class="page-title">
+            Olá, {{ current_user.nome.split()[0] }}.
+        </h1>
+
+        <p class="page-description">
+            Veja o que precisa de atenção e acompanhe
+            as atividades recentes do cuidado pastoral.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- INDICADORES -->
+
+<section class="dashboard-stats">
+
+    <a
+        href="{{ url_for('acompanhamentos.listar') }}"
+        class="stat-card"
+    >
+
+        <span class="stat-label">
+            Acompanhamentos ativos
+        </span>
+
+        <strong class="stat-number">
+            {{ acompanhamentos_ativos }}
+        </strong>
+
+        <span class="stat-link">
+            Ver acompanhamentos →
+        </span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('tarefas.listar', status='pendentes') }}"
+        class="stat-card"
+    >
+
+        <span class="stat-label">
+            Tarefas pendentes
+        </span>
+
+        <strong class="stat-number">
+            {{ tarefas_pendentes }}
+        </strong>
+
+        <span class="stat-link">
+            Ver tarefas →
+        </span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('tarefas.listar', status='atrasadas') }}"
+        class="stat-card stat-card-highlight"
+    >
+
+        <span class="stat-label">
+            Tarefas atrasadas
+        </span>
+
+        <strong class="stat-number">
+            {{ tarefas_atrasadas }}
+        </strong>
+
+        <span class="stat-link">
+            Ver pendências →
+        </span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('acompanhamentos.listar') }}"
+        class="stat-card"
+    >
+
+        <span class="stat-label">
+            Sem responsável
+        </span>
+
+        <strong class="stat-number">
+            {{ acompanhamentos_sem_responsavel }}
+        </strong>
+
+        <span class="stat-link">
+            Revisar →
+        </span>
+
+    </a>
+
+</section>
+
+
+<section class="attention-section">
+
+    <div class="section-heading">
+
+        <div>
+            <p class="page-label">
+                Prioridades
+            </p>
+
+            <h2 class="section-title">
+                Precisa de atenção
+            </h2>
+        </div>
+
+    </div>
+
+
+    {% if tarefas_atencao or acompanhamentos_atencao %}
+
+        <div class="attention-panel">
+
+
+            {% for tarefa in tarefas_atencao %}
+
+                {% set atrasada = tarefa.prazo < hoje %}
+
+                <a
+                    href="{{ url_for(
+                        'tarefas.detalhe',
+                        tarefa_id=tarefa.id
+                    ) }}"
+                    class="attention-row"
+                >
+
+                    <div class="attention-status">
+
+                        {% if atrasada %}
+
+                            <span class="attention-label attention-danger">
+                                Atrasada
+                            </span>
+
+                        {% elif tarefa.prioridade == "urgente" %}
+
+                            <span class="attention-label attention-danger">
+                                Urgente
+                            </span>
+
+                        {% else %}
+
+                            <span class="attention-label">
+                                Alta
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="attention-content">
+
+                        <span class="attention-title">
+                            {{ tarefa.titulo }}
+                        </span>
+
+                        <span class="attention-description">
+
+                            {{ tarefa.pessoa.nome }}
+
+                            · prazo
+
+                            {{ tarefa.prazo.strftime("%d/%m/%Y") }}
+
+                        </span>
+
+                    </div>
+
+
+                    <span class="attention-arrow">
+                        →
+                    </span>
+
+                </a>
+
+            {% endfor %}
+
+
+
+            {% for acompanhamento in acompanhamentos_atencao %}
+
+                <a
+                    href="{{ url_for(
+                        'acompanhamentos.detalhe',
+                        acompanhamento_id=acompanhamento.id
+                    ) }}"
+                    class="attention-row"
+                >
+
+                    <div class="attention-status">
+
+                        {% if acompanhamento.responsavel_id is none %}
+
+                            <span class="attention-label">
+                                Sem responsável
+                            </span>
+
+                        {% elif acompanhamento.prioridade == "urgente" %}
+
+                            <span class="attention-label attention-danger">
+                                Urgente
+                            </span>
+
+                        {% else %}
+
+                            <span class="attention-label">
+                                Alta
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="attention-content">
+
+                        <span class="attention-title">
+                            {{ acompanhamento.pessoa.nome }}
+                        </span>
+
+                        <span class="attention-description">
+
+                            {{ acompanhamento.tipo
+                                |replace("_", " ")
+                                |capitalize }}
+
+                        </span>
+
+                    </div>
+
+
+                    <span class="attention-arrow">
+                        →
+                    </span>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="placeholder-panel">
+
+            <p>
+                Nenhuma pendência prioritária no momento.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- CONTEÚDO PRINCIPAL -->
+
+<div class="dashboard-grid">
+
+    <!-- PRÓXIMAS TAREFAS -->
+
+    <section class="panel dashboard-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <p class="page-label">
+                    Pendências
+                </p>
+
+                <h2 class="panel-title">
+                    Próximas tarefas
+                </h2>
+            </div>
+
+            <a
+                href="{{ url_for('tarefas.listar') }}"
+                class="action-link"
+            >
+                Ver todas
+            </a>
+
+        </div>
+
+
+        {% if proximas_tarefas %}
+
+            <div>
+
+                {% for tarefa in proximas_tarefas %}
+
+                    {% set atrasada =
+                        tarefa.prazo < hoje
+                    %}
+
+                    <a
+                        href="{{ url_for(
+                            'tarefas.detalhe',
+                            tarefa_id=tarefa.id
+                        ) }}"
+                        class="dashboard-row"
+                    >
+
+                        <div>
+
+                            <span class="dashboard-row-title">
+                                {{ tarefa.titulo }}
+                            </span>
+
+                            <span class="dashboard-row-subtitle">
+                                {{ tarefa.pessoa.nome }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="dashboard-row-meta">
+
+                            {% if atrasada %}
+
+                                <span class="tag task-overdue">
+                                    Atrasada
+                                </span>
+
+                            {% endif %}
+
+                            <span>
+                                {{ tarefa.prazo.strftime("%d/%m") }}
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="dashboard-empty">
+                Nenhuma tarefa pendente.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ACOMPANHAMENTOS -->
+
+    <section class="panel dashboard-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <p class="page-label">
+                    Cuidado pastoral
+                </p>
+
+                <h2 class="panel-title">
+                    Acompanhamentos recentes
+                </h2>
+            </div>
+
+            <a
+                href="{{ url_for('acompanhamentos.listar') }}"
+                class="action-link"
+            >
+                Ver todos
+            </a>
+
+        </div>
+
+
+        {% if acompanhamentos_recentes %}
+
+            <div>
+
+                {% for acompanhamento in acompanhamentos_recentes %}
+
+                    <a
+                        href="{{ url_for(
+                            'acompanhamentos.detalhe',
+                            acompanhamento_id=acompanhamento.id
+                        ) }}"
+                        class="dashboard-row"
+                    >
+
+                        <div>
+
+                            <span class="dashboard-row-title">
+                                {{ acompanhamento.pessoa.nome }}
+                            </span>
+
+                            <span class="dashboard-row-subtitle">
+
+                                {{ acompanhamento.tipo
+                                    |replace("_", " ")
+                                    |capitalize }}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="dashboard-row-meta">
+
+                            <span class="tag">
+                                {{ acompanhamento.prioridade|capitalize }}
+                            </span>
+
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="dashboard-empty">
+                Nenhum acompanhamento ativo.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<!-- VISITANTES -->
+
+<section class="dashboard-visitors">
+
+    <div class="section-heading">
+
+        <div>
+
+            <p class="page-label">
+                Integração
+            </p>
+
+            <h2 class="section-title">
+                Visitantes recentes
+            </h2>
+
+        </div>
+
+        <a
+            href="{{ url_for(
+                'pessoas.listar',
+                situacao='visitante'
+            ) }}"
+            class="button button-light"
+        >
+            Ver visitantes
+        </a>
+
+    </div>
+
+
+    {% if visitantes_recentes %}
+
+        <div class="visitor-grid">
+
+            {% for pessoa in visitantes_recentes %}
+
+                <a
+                    href="{{ url_for(
+                        'pessoas.detalhe',
+                        pessoa_id=pessoa.id
+                    ) }}"
+                    class="visitor-card"
+                >
+
+                    <span class="page-label">
+                        Visitante
+                    </span>
+
+                    <span class="visitor-name">
+                        {{ pessoa.nome }}
+                    </span>
+
+                    <span class="muted">
+
+                        {% if pessoa.telefone %}
+
+                            {{ pessoa.telefone }}
+
+                        {% else %}
+
+                            Contato não informado
+
+                        {% endif %}
+
+                    </span>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="placeholder-panel">
+            <p>Nenhum visitante cadastrado.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
