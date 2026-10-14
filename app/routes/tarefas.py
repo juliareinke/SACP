@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.forms.tarefa import ConcluirTarefaForm, ReabrirTarefaForm, TarefaForm
 from app.models import Acompanhamento, Pessoa, Tarefa, Usuario
-
+from app.permissions import roles_required
 
 tarefas_bp = Blueprint(
     "tarefas",
@@ -85,7 +85,11 @@ def validar_acompanhamento(form):
 
 
 @tarefas_bp.route("/")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def listar():
     status = request.args.get("status", "pendentes")
 
@@ -120,7 +124,11 @@ def listar():
 
 
 @tarefas_bp.route("/nova", methods=["GET", "POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def criar():
     form = TarefaForm()
     configurar_choices(form)
@@ -200,7 +208,11 @@ def criar():
 
 
 @tarefas_bp.route("/<int:tarefa_id>")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def detalhe(tarefa_id):
     tarefa = db.get_or_404(Tarefa, tarefa_id)
 
@@ -220,7 +232,11 @@ def detalhe(tarefa_id):
     "/<int:tarefa_id>/editar",
     methods=["GET", "POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def editar(tarefa_id):
     tarefa = db.get_or_404(Tarefa, tarefa_id)
 
@@ -300,7 +316,11 @@ def editar(tarefa_id):
     "/<int:tarefa_id>/concluir",
     methods=["POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def concluir(tarefa_id):
     tarefa = db.get_or_404(Tarefa, tarefa_id)
     form = ConcluirTarefaForm()
@@ -328,7 +348,11 @@ def concluir(tarefa_id):
     "/<int:tarefa_id>/reabrir",
     methods=["POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def reabrir(tarefa_id):
     tarefa = db.get_or_404(Tarefa, tarefa_id)
     form = ReabrirTarefaForm()

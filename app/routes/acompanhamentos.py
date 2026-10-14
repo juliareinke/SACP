@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.forms.acompanhamento import AcompanhamentoForm, EncerrarAcompanhamentoForm, RegistroAcompanhamentoForm
 from app.models import Acompanhamento, Pessoa, Usuario, RegistroAcompanhamento
-
+from app.permissions import roles_required
 
 acompanhamentos_bp = Blueprint(
     "acompanhamentos",
@@ -38,7 +38,11 @@ def configurar_choices(form):
 
 
 @acompanhamentos_bp.route("/")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def listar():
     status = request.args.get("status", "ativos")
 
@@ -68,7 +72,11 @@ def listar():
 
 
 @acompanhamentos_bp.route("/novo", methods=["GET", "POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def criar():
     form = AcompanhamentoForm()
     configurar_choices(form)
@@ -126,7 +134,11 @@ def criar():
 
 
 @acompanhamentos_bp.route("/<int:acompanhamento_id>")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def detalhe(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -147,7 +159,11 @@ def detalhe(acompanhamento_id):
     "/<int:acompanhamento_id>/editar",
     methods=["GET", "POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def editar(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -211,7 +227,11 @@ def editar(acompanhamento_id):
     "/<int:acompanhamento_id>/encerrar",
     methods=["POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def encerrar(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,
@@ -243,7 +263,11 @@ def encerrar(acompanhamento_id):
     "/<int:acompanhamento_id>/registros/novo",
     methods=["GET", "POST"]
 )
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider"
+)
 def criar_registro(acompanhamento_id):
     acompanhamento = db.get_or_404(
         Acompanhamento,

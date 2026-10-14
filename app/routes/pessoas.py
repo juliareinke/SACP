@@ -4,6 +4,7 @@ from app import db
 from app.forms.pessoa import PessoaForm, InativarPessoaForm, ReativarPessoaForm
 from app.models import Pessoa
 from datetime import date
+from app.permissions import roles_required
 
 pessoas_bp = Blueprint(
     "pessoas",
@@ -23,7 +24,12 @@ def converter_tem_filhos(valor):
 
 
 @pessoas_bp.route("/")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def listar():
     busca = request.args.get("busca", "").strip()
     situacao = request.args.get("situacao", "")
@@ -61,7 +67,12 @@ def listar():
 
 
 @pessoas_bp.route("/nova", methods=["GET", "POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def criar():
     form = PessoaForm()
 
@@ -93,7 +104,12 @@ def criar():
 
 
 @pessoas_bp.route("/<int:pessoa_id>")
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def detalhe(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
 
@@ -110,7 +126,12 @@ def detalhe(pessoa_id):
 
 
 @pessoas_bp.route("/<int:pessoa_id>/editar", methods=["GET", "POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def editar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
 
@@ -167,7 +188,12 @@ def editar(pessoa_id):
 
 
 @pessoas_bp.route("/<int:pessoa_id>/inativar", methods=["POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def inativar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
     form = InativarPessoaForm()
@@ -184,7 +210,12 @@ def inativar(pessoa_id):
     
     
 @pessoas_bp.route("/<int:pessoa_id>/reativar", methods=["POST"])
-@login_required
+@roles_required(
+    "admin",
+    "pastoral",
+    "lider",
+    "recepcao"
+)
 def reativar(pessoa_id):
     pessoa = db.get_or_404(Pessoa, pessoa_id)
     form = ReativarPessoaForm()
