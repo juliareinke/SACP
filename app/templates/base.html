@@ -34,19 +34,31 @@
             </a>
 
 
-            <nav class="nav-links">
+            <nav>
 
                 <a href="{{ url_for('pessoas.listar') }}">
                     Pessoas
                 </a>
 
-                <a href="{{ url_for('acompanhamentos.listar') }}">
-                    Acompanhamentos
-                </a>
+                {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
 
-                <a href="{{ url_for('tarefas.listar') }}">
-                    Tarefas
-                </a>
+                    <a href="{{ url_for('acompanhamentos.listar') }}">
+                        Acompanhamentos
+                    </a>
+
+                    <a href="{{ url_for('tarefas.listar') }}">
+                        Tarefas
+                    </a>
+
+                {% endif %}
+
+                {% if current_user.perfil == "admin" %}
+
+                    <a href="{{ url_for('usuarios.listar') }}">
+                        Usuários
+                    </a>
+
+                {% endif %}
 
             </nav>
 

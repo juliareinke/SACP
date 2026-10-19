@@ -36,12 +36,14 @@ def create_app():
     from app.routes.acompanhamentos import acompanhamentos_bp
     from app.routes.auth import auth_bp
     from app.routes.tarefas import tarefas_bp
+    from app.routes.usuarios import usuarios_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(pessoas_bp)
     app.register_blueprint(acompanhamentos_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(tarefas_bp)
+    app.register_blueprint(usuarios_bp)
 
     @app.errorhandler(403)
     def forbidden(error):

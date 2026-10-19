@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Início - SACP{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-heading">
+
+    <p class="page-label">
+        Recepção
+    </p>
+
+    <h1 class="page-title">
+        Olá, {{ current_user.nome.split()[0] }}.
+    </h1>
+
+    <p class="page-description">
+        Consulte pessoas cadastradas ou registre um novo visitante.
+    </p>
+
+</section>
+
+
+<section class="dashboard-stats reception-stats">
+
+    <a
+        href="{{ url_for('pessoas.listar') }}"
+        class="stat-card"
+    >
+        <span class="stat-label">
+            Pessoas ativas
+        </span>
+
+        <strong class="stat-number">
+            {{ total_pessoas }}
+        </strong>
+
+        <span class="stat-link">
+            Ver pessoas →
+        </span>
+    </a>
+
+
+    <a
+        href="{{ url_for('pessoas.listar', situacao='visitante') }}"
+        class="stat-card"
+    >
+        <span class="stat-label">
+            Visitantes
+        </span>
+
+        <strong class="stat-number">
+            {{ total_visitantes }}
+        </strong>
+
+        <span class="stat-link">
+            Ver visitantes →
+        </span>
+    </a>
+
+
+    <a
+        href="{{ url_for('pessoas.criar') }}"
+        class="stat-card reception-action-card"
+    >
+        <span class="stat-label">
+            Novo cadastro
+        </span>
+
+        <strong class="reception-action-title">
+            Registrar pessoa
+        </strong>
+
+        <span class="stat-link">
+            Cadastrar →
+        </span>
+    </a>
+
+</section>
+
+
+<section class="dashboard-visitors">
+
+    <div class="section-heading">
+
+        <div>
+            <p class="page-label">
+                Integração
+            </p>
+
+            <h2 class="section-title">
+                Visitantes recentes
+            </h2>
+        </div>
+
+        <a
+            href="{{ url_for('pessoas.listar', situacao='visitante') }}"
+            class="button button-light"
+        >
+            Ver todos
+        </a>
+
+    </div>
+
+
+    {% if visitantes_recentes %}
+
+        <div class="visitor-grid">
+
+            {% for pessoa in visitantes_recentes %}
+
+                <a
+                    href="{{ url_for(
+                        'pessoas.detalhe',
+                        pessoa_id=pessoa.id
+                    ) }}"
+                    class="visitor-card"
+                >
+
+                    <span class="page-label">
+                        Visitante
+                    </span>
+
+                    <span class="visitor-name">
+                        {{ pessoa.nome }}
+                    </span>
+
+                    <span class="muted">
+
+                        {% if pessoa.telefone %}
+                            {{ pessoa.telefone }}
+                        {% else %}
+                            Contato não informado
+                        {% endif %}
+
+                    </span>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="placeholder-panel">
+            <p>Nenhum visitante cadastrado.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

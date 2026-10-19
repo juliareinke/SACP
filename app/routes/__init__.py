@@ -1,10 +1,9 @@
 from datetime import date
 from flask import Blueprint, render_template
-from flask_login import login_required
-from sqlalchemy import func
+from flask_login import login_required, current_user
+from sqlalchemy import func, or_
 from app import db
 from app.models import Acompanhamento, Pessoa, Tarefa
-from sqlalchemy import func, or_
 
 main_bp = Blueprint("main", __name__)
 
@@ -13,6 +12,43 @@ main_bp = Blueprint("main", __name__)
 def index():
     hoje = date.today()
 
+    # HOME DA RECEPÇÃO
+    if current_user.perfil == "recepcao":
+
+        visitantes_recentes = db.session.execute(
+            db.select(Pessoa)
+            .where(
+                Pessoa.ativo.is_(True),
+                Pessoa.situacao_igreja == "visitante"
+            )
+            .order_by(Pessoa.data_cadastro.desc())
+            .limit(5)
+        ).scalars().all()
+
+        total_pessoas = db.session.scalar(
+            db.select(func.count())
+            .select_from(Pessoa)
+            .where(Pessoa.ativo.is_(True))
+        )
+
+        total_visitantes = db.session.scalar(
+            db.select(func.count())
+            .select_from(Pessoa)
+            .where(
+                Pessoa.ativo.is_(True),
+                Pessoa.situacao_igreja == "visitante"
+            )
+        )
+
+        return render_template(
+            "recepcao/index.html",
+            visitantes_recentes=visitantes_recentes,
+            total_pessoas=total_pessoas,
+            total_visitantes=total_visitantes
+        )
+
+
+    # DASHBOARD PASTORAL
     acompanhamentos_ativos = db.session.scalar(
         db.select(func.count())
         .select_from(Acompanhamento)
@@ -46,18 +82,14 @@ def index():
     proximas_tarefas = db.session.execute(
         db.select(Tarefa)
         .where(Tarefa.status == "pendente")
-        .order_by(
-            Tarefa.prazo.asc()
-        )
+        .order_by(Tarefa.prazo.asc())
         .limit(5)
     ).scalars().all()
 
     acompanhamentos_recentes = db.session.execute(
         db.select(Acompanhamento)
         .where(Acompanhamento.status == "ativo")
-        .order_by(
-            Acompanhamento.data_inicio.desc()
-        )
+        .order_by(Acompanhamento.data_inicio.desc())
         .limit(5)
     ).scalars().all()
 
@@ -67,12 +99,10 @@ def index():
             Pessoa.ativo.is_(True),
             Pessoa.situacao_igreja == "visitante"
         )
-        .order_by(
-            Pessoa.data_cadastro.desc()
-        )
+        .order_by(Pessoa.data_cadastro.desc())
         .limit(5)
     ).scalars().all()
-    
+
     tarefas_atencao = db.session.execute(
         db.select(Tarefa)
         .where(
@@ -85,7 +115,6 @@ def index():
         .order_by(Tarefa.prazo.asc())
         .limit(5)
     ).scalars().all()
-
 
     acompanhamentos_atencao = db.session.execute(
         db.select(Acompanhamento)

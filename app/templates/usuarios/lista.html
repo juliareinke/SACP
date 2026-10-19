@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+        <p class="page-label">
+            Administração
+        </p>
+
+        <h1 class="page-title">
+            Usuários
+        </h1>
+
+        <p class="page-description">
+            Gerencie os usuários e seus níveis de acesso ao sistema.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('usuarios.criar') }}"
+        class="button button-primary"
+    >
+        Novo usuário
+    </a>
+
+</section>
+
+
+<section class="panel">
+
+    {% if usuarios %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for usuario in usuarios %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ usuario.nome }}
+                                </strong>
+
+                                {% if usuario.id == current_user.id %}
+                                    <span class="muted">
+                                        · você
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ usuario.email }}
+                            </td>
+
+                            <td>
+                                {{ usuario.perfil|capitalize }}
+                            </td>
+
+                            <td>
+
+                                {% if usuario.ativo %}
+                                    <span class="tag">
+                                        Ativo
+                                    </span>
+                                {% else %}
+                                    <span class="tag">
+                                        Inativo
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'usuarios.editar',
+                                        usuario_id=usuario.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Editar
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="placeholder-panel">
+            <p>Nenhum usuário cadastrado.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
