@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}{{ grupo.nome }} - SACP{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="page-label">
+                Pequeno Grupo
+            </span>
+
+            {% if grupo.ativo %}
+
+                <span class="status-dot">
+                    Ativo
+                </span>
+
+            {% else %}
+
+                <span class="status-dot">
+                    Inativo
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <h1 class="page-title">
+            {{ grupo.nome }}
+        </h1>
+
+    </div>
+
+
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <div class="person-header-actions">
+
+            <a
+                href="{{ url_for(
+                    'pequenos_grupos.editar',
+                    grupo_id=grupo.id
+                ) }}"
+                class="button button-light"
+            >
+                Editar
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="detail-layout">
+
+    <main class="detail-main">
+
+        <section class="panel">
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Líder
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if grupo.lider %}
+                            {{ grupo.lider.nome }}
+                        {% else %}
+                            Não definido
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Dia
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if grupo.dia_semana %}
+                            {{ grupo.dia_semana|capitalize }}
+                        {% else %}
+                            Não informado
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Horário
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if grupo.horario %}
+                            {{ grupo.horario.strftime("%H:%M") }}
+                        {% else %}
+                            Não informado
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Local
+                    </span>
+
+                    <span class="info-value">
+                        {{ grupo.local or "Não informado" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="future-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="page-label">
+                        Participação
+                    </p>
+
+                    <h2 class="section-title">
+                        Participantes
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {% if participantes_ativos %}
+
+                <section class="panel">
+
+                    {% for vinculo in participantes_ativos %}
+
+                        <a
+                            href="{{ url_for(
+                                'pessoas.detalhe',
+                                pessoa_id=vinculo.pessoa.id
+                            ) }}"
+                            class="followup-row"
+                        >
+
+                            <span class="followup-title">
+                                {{ vinculo.pessoa.nome }}
+                            </span>
+
+                            <span class="muted">
+                                Desde
+                                {{ vinculo.data_entrada.strftime("%d/%m/%Y") }}
+                            </span>
+
+                        </a>
+
+                    {% endfor %}
+
+                </section>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhum participante vinculado a este grupo.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Status
+            </p>
+
+            <p class="side-status">
+
+                {% if grupo.ativo %}
+                    Este Pequeno Grupo está ativo.
+                {% else %}
+                    Este Pequeno Grupo está inativo.
+                {% endif %}
+
+            </p>
+
+
+            {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                {% if grupo.ativo %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'pequenos_grupos.desativar',
+                            grupo_id=grupo.id
+                        ) }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="button button-danger button-full"
+                        >
+                            Desativar grupo
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'pequenos_grupos.reativar',
+                            grupo_id=grupo.id
+                        ) }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="button button-primary button-full"
+                        >
+                            Reativar grupo
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

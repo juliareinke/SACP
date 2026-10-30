@@ -50,6 +50,10 @@
                         Tarefas
                     </a>
 
+                    <a href="{{ url_for('pequenos_grupos.listar') }}">
+                        Pequenos Grupos
+                    </a>
+
                 {% endif %}
 
                 {% if current_user.perfil == "admin" %}

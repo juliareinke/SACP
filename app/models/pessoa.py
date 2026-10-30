@@ -37,6 +37,13 @@ class Pessoa(db.Model):
         "Tarefa",
         back_populates="pessoa"
     )
+    
+    vinculos_pequeno_grupo = db.relationship(
+        "PessoaPequenoGrupo",
+        back_populates="pessoa"
+    )
 
     def __repr__(self):
         return f"<Pessoa {self.nome}>"
+    
+    

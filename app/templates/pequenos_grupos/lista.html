@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Pequenos Grupos - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+
+        <p class="page-label">
+            Comunidade
+        </p>
+
+        <h1 class="page-title">
+            Pequenos Grupos
+        </h1>
+
+        <p class="page-description">
+            Consulte os grupos, seus líderes e participantes.
+        </p>
+
+    </div>
+
+
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <a
+            href="{{ url_for('pequenos_grupos.criar') }}"
+            class="button button-primary"
+        >
+            Novo grupo
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<section class="panel">
+
+    {% if grupos %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Grupo</th>
+                        <th>Líder</th>
+                        <th>Dia</th>
+                        <th>Horário</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for grupo in grupos %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ grupo.nome }}
+                            </td>
+
+                            <td>
+
+                                {% if grupo.lider %}
+                                    {{ grupo.lider.nome }}
+                                {% else %}
+                                    <span class="muted">
+                                        Não definido
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if grupo.dia_semana %}
+                                    {{ grupo.dia_semana|capitalize }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if grupo.horario %}
+                                    {{ grupo.horario.strftime("%H:%M") }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if grupo.ativo %}
+                                    <span class="tag">
+                                        Ativo
+                                    </span>
+                                {% else %}
+                                    <span class="tag tag-inactive">
+                                        Inativo
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'pequenos_grupos.detalhe',
+                                        grupo_id=grupo.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Ver
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>
+                Nenhum Pequeno Grupo cadastrado
+            </h2>
+
+            <p>
+                Os grupos cadastrados aparecerão aqui.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
