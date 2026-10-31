@@ -1,8 +1,8 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app import db
 from app.forms.pessoa import PessoaForm, InativarPessoaForm, ReativarPessoaForm
-from app.models import Pessoa
+from app.models import Pessoa, PessoaPequenoGrupo
 from datetime import date
 from app.permissions import roles_required
 
@@ -115,12 +115,24 @@ def detalhe(pessoa_id):
 
     inativar_form = InativarPessoaForm()
     reativar_form = ReativarPessoaForm()
+    
+    vinculo_pg = None
+
+    if current_user.perfil in ["admin", "pastoral", "lider"]:
+        vinculo_pg = db.session.scalar(
+            db.select(PessoaPequenoGrupo)
+            .where(
+                PessoaPequenoGrupo.pessoa_id == pessoa.id,
+                PessoaPequenoGrupo.ativo.is_(True)
+            )
+        )
 
     return render_template(
         "pessoas/detalhe.html",
         pessoa=pessoa,
         inativar_form=inativar_form,
         reativar_form=reativar_form,
+        vinculo_pg = vinculo_pg,
         hoje=date.today()
     )
 

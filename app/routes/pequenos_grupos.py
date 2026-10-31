@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from app import db
-from app.models import Pessoa, PequenoGrupo
-from app.forms.pequeno_grupo import PequenoGrupoForm
+from app.models import Pessoa, PequenoGrupo, PessoaPequenoGrupo
+from app.forms.pequeno_grupo import PequenoGrupoForm, ParticipantePequenoGrupoForm
 from app.permissions import roles_required
-
+from datetime import date
 
 pequenos_grupos_bp = Blueprint(
     "pequenos_grupos",
@@ -109,10 +109,16 @@ def detalhe(grupo_id):
         if vinculo.ativo
     ]
 
+    form_participante = ParticipantePequenoGrupoForm()
+    configurar_participantes_disponiveis(
+        form_participante
+    )
+
     return render_template(
         "pequenos_grupos/detalhe.html",
         grupo=grupo,
-        participantes_ativos=participantes_ativos
+        participantes_ativos=participantes_ativos,
+        form_participante=form_participante
     )
 
 
@@ -225,6 +231,151 @@ def reativar(grupo_id):
         "Pequeno Grupo reativado.",
         "success"
     )
+
+    return redirect(
+        url_for(
+            "pequenos_grupos.detalhe",
+            grupo_id=grupo.id
+        )
+    )
+    
+    
+def configurar_participantes_disponiveis(form):
+    vinculos_ativos = db.session.execute(
+        db.select(PessoaPequenoGrupo)
+        .where(PessoaPequenoGrupo.ativo.is_(True))
+    ).scalars().all()
+
+    pessoas_com_pg = {
+        vinculo.pessoa_id
+        for vinculo in vinculos_ativos
+    }
+
+    pessoas = db.session.execute(
+        db.select(Pessoa)
+        .where(
+            Pessoa.ativo.is_(True),
+            Pessoa.id.not_in(pessoas_com_pg)
+        )
+        .order_by(Pessoa.nome.asc())
+    ).scalars().all()
+
+    form.pessoa_id.choices = [
+        (pessoa.id, pessoa.nome)
+        for pessoa in pessoas
+    ]
+    
+
+@pequenos_grupos_bp.route(
+    "/<int:grupo_id>/participantes/adicionar",
+    methods=["POST"]
+)
+@roles_required("admin", "pastoral")
+def adicionar_participante(grupo_id):
+    grupo = db.get_or_404(
+        PequenoGrupo,
+        grupo_id
+    )
+
+    if not grupo.ativo:
+        flash(
+            "Não é possível adicionar participantes a um grupo inativo.",
+            "error"
+        )
+        return redirect(
+            url_for(
+                "pequenos_grupos.detalhe",
+                grupo_id=grupo.id
+            )
+        )
+
+    form = ParticipantePequenoGrupoForm()
+    configurar_participantes_disponiveis(form)
+
+    if form.validate_on_submit():
+
+        vinculo_existente = db.session.scalar(
+            db.select(PessoaPequenoGrupo)
+            .where(
+                PessoaPequenoGrupo.pessoa_id == form.pessoa_id.data,
+                PessoaPequenoGrupo.ativo.is_(True)
+            )
+        )
+
+        if vinculo_existente:
+            flash(
+                "Esta pessoa já participa de um Pequeno Grupo.",
+                "error"
+            )
+
+        else:
+            vinculo = PessoaPequenoGrupo(
+                pessoa_id=form.pessoa_id.data,
+                pequeno_grupo_id=grupo.id,
+                data_entrada=date.today(),
+                ativo=True
+            )
+
+            db.session.add(vinculo)
+            db.session.commit()
+
+            flash(
+                "Participante adicionado ao grupo.",
+                "success"
+            )
+
+    else:
+        flash(
+            "Não foi possível adicionar o participante.",
+            "error"
+        )
+
+    return redirect(
+        url_for(
+            "pequenos_grupos.detalhe",
+            grupo_id=grupo.id
+        )
+    )
+
+
+@pequenos_grupos_bp.route(
+    "/<int:grupo_id>/participantes/<int:vinculo_id>/remover",
+    methods=["POST"]
+)
+@roles_required("admin", "pastoral")
+def remover_participante(grupo_id, vinculo_id):
+    grupo = db.get_or_404(
+        PequenoGrupo,
+        grupo_id
+    )
+
+    vinculo = db.session.scalar(
+        db.select(PessoaPequenoGrupo)
+        .where(
+            PessoaPequenoGrupo.id == vinculo_id,
+            PessoaPequenoGrupo.pequeno_grupo_id == grupo.id
+        )
+    )
+
+    if vinculo is None:
+        return "", 404
+
+    if not vinculo.ativo:
+        flash(
+            "Este participante já não faz parte do grupo.",
+            "error"
+        )
+
+    else:
+        vinculo.ativo = False
+        vinculo.data_saida = date.today()
+
+        db.session.commit()
+
+        flash(
+            "Participante removido do grupo.",
+            "success"
+        )
 
     return redirect(
         url_for(

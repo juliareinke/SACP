@@ -205,6 +205,79 @@
         </div>
 
 
+        {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
+
+            <section class="future-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="page-label">
+                            Comunidade
+                        </p>
+
+                        <h2 class="section-title">
+                            Pequeno Grupo
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                {% if vinculo_pg %}
+
+                    <section class="panel">
+
+                        <a
+                            href="{{ url_for(
+                                'pequenos_grupos.detalhe',
+                                grupo_id=vinculo_pg.pequeno_grupo.id
+                            ) }}"
+                            class="followup-row"
+                        >
+
+                            <div>
+
+                                <span class="followup-title">
+                                    {{ vinculo_pg.pequeno_grupo.nome }}
+                                </span>
+
+                            </div>
+
+                            <div>
+
+                                <span class="muted">
+
+                                    Desde
+                                    {{ vinculo_pg.data_entrada.strftime("%d/%m/%Y") }}
+
+                                </span>
+
+                            </div>
+
+                        </a>
+
+                    </section>
+
+                {% else %}
+
+                    <div class="placeholder-panel">
+
+                        <p>
+                            Esta pessoa não participa de um Pequeno Grupo atualmente.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        {% endif %}
+
+
         <!-- ACOMPANHAMENTOS -->
 
         <div class="future-section">

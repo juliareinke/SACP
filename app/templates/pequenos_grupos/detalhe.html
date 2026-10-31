@@ -159,30 +159,107 @@
             </div>
 
 
+            {% if
+                grupo.ativo
+                and current_user.perfil in ["admin", "pastoral"]
+                and form_participante.pessoa_id.choices
+            %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'pequenos_grupos.adicionar_participante',
+                        grupo_id=grupo.id
+                    ) }}"
+                    class="participant-form"
+                >
+
+                    {{ form_participante.hidden_tag() }}
+
+                    <div class="form-group">
+
+                        {{ form_participante.pessoa_id.label(
+                            class="form-label"
+                        ) }}
+
+                        {{ form_participante.pessoa_id(
+                            class="form-control"
+                        ) }}
+
+                    </div>
+
+                    {{ form_participante.submit(
+                        class="button button-primary"
+                    ) }}
+
+                </form>
+
+            {% endif %}
+
+
             {% if participantes_ativos %}
 
                 <section class="panel">
 
                     {% for vinculo in participantes_ativos %}
 
-                        <a
-                            href="{{ url_for(
-                                'pessoas.detalhe',
-                                pessoa_id=vinculo.pessoa.id
-                            ) }}"
-                            class="followup-row"
-                        >
+                        <div class="followup-row">
 
-                            <span class="followup-title">
-                                {{ vinculo.pessoa.nome }}
-                            </span>
+                            <div>
 
-                            <span class="muted">
-                                Desde
-                                {{ vinculo.data_entrada.strftime("%d/%m/%Y") }}
-                            </span>
+                                <a
+                                    href="{{ url_for(
+                                        'pessoas.detalhe',
+                                        pessoa_id=vinculo.pessoa.id
+                                    ) }}"
+                                    class="followup-title"
+                                >
+                                    {{ vinculo.pessoa.nome }}
+                                </a>
 
-                        </a>
+                            </div>
+
+
+                            <div>
+
+                                <span class="muted">
+                                    Desde
+                                    {{ vinculo.data_entrada.strftime("%d/%m/%Y") }}
+                                </span>
+
+
+                                {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'pequenos_grupos.remover_participante',
+                                            grupo_id=grupo.id,
+                                            vinculo_id=vinculo.id
+                                        ) }}"
+                                        class="inline-form"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="link-button"
+                                        >
+                                            Remover
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
 
                     {% endfor %}
 

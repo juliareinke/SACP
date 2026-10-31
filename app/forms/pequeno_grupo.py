@@ -50,3 +50,12 @@ class PequenoGrupoForm(FlaskForm):
     )
 
     submit = SubmitField("Salvar")
+    
+class ParticipantePequenoGrupoForm(FlaskForm):
+    pessoa_id = SelectField(
+        "Pessoa",
+        coerce=int,
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Adicionar participante")

@@ -1436,3 +1436,51 @@ select.form-control {
     }
 
 }
+
+
+/* PARTICIPANTES DE PEQUENOS GRUPOS */
+
+.participant-form {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+
+    margin-bottom: 20px;
+    padding: 20px;
+
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+}
+
+.inline-form {
+    display: inline;
+}
+
+.link-button {
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+
+    text-decoration: underline;
+    text-underline-offset: 4px;
+
+    cursor: pointer;
+}
+
+.link-button:hover {
+    text-decoration-thickness: 2px;
+}
+
+@media (max-width: 600px) {
+
+    .participant-form {
+        grid-template-columns: 1fr;
+    }
+
+}
