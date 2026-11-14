@@ -38,6 +38,7 @@ def create_app():
     from app.routes.tarefas import tarefas_bp
     from app.routes.usuarios import usuarios_bp
     from app.routes.pequenos_grupos import pequenos_grupos_bp
+    from app.routes.discipulados import discipulados_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(pessoas_bp)
@@ -46,6 +47,7 @@ def create_app():
     app.register_blueprint(tarefas_bp)
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(pequenos_grupos_bp)
+    app.register_blueprint(discipulados_bp)
 
     @app.errorhandler(403)
     def forbidden(error):

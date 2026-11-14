@@ -54,6 +54,10 @@
                         Pequenos Grupos
                     </a>
 
+                    <a href="{{ url_for('discipulados.listar') }}">
+                        Discipulados
+                    </a>
+
                 {% endif %}
 
                 {% if current_user.perfil == "admin" %}

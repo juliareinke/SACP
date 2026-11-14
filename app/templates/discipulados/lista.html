@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Discipulados - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+
+        <p class="page-label">
+            Formação
+        </p>
+
+        <h1 class="page-title">
+            Discipulados
+        </h1>
+
+        <p class="page-description">
+            Acompanhe os vínculos de discipulado registrados.
+        </p>
+
+    </div>
+
+
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <a
+            href="{{ url_for('discipulados.criar') }}"
+            class="button button-primary"
+        >
+            Novo discipulado
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<div class="simple-filter">
+
+    <div class="form-group">
+
+        <label class="form-label">
+            Status
+        </label>
+
+        <select
+            class="form-control"
+            onchange="window.location.href=this.value"
+        >
+
+            <option
+                value="{{ url_for(
+                    'discipulados.listar',
+                    status='ativos'
+                ) }}"
+                {% if status == "ativos" %}selected{% endif %}
+            >
+                Ativos
+            </option>
+
+            <option
+                value="{{ url_for(
+                    'discipulados.listar',
+                    status='encerrados'
+                ) }}"
+                {% if status == "encerrados" %}selected{% endif %}
+            >
+                Encerrados
+            </option>
+
+            <option
+                value="{{ url_for(
+                    'discipulados.listar',
+                    status='todos'
+                ) }}"
+                {% if status == "todos" %}selected{% endif %}
+            >
+                Todos
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<section class="panel">
+
+    {% if discipulados %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Pessoa</th>
+                        <th>Discipulador</th>
+                        <th>Início</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for discipulado in discipulados %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ discipulado.pessoa.nome }}
+                            </td>
+
+                            <td>
+                                {{ discipulado.discipulador.nome }}
+                            </td>
+
+                            <td>
+                                {{ discipulado.data_inicio.strftime("%d/%m/%Y") }}
+                            </td>
+
+                            <td>
+
+                                {% if discipulado.status == "ativo" %}
+
+                                    <span class="tag">
+                                        Ativo
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="tag tag-inactive">
+                                        Encerrado
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'discipulados.detalhe',
+                                        discipulado_id=discipulado.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Ver
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>
+                Nenhum discipulado encontrado
+            </h2>
+
+            <p>
+                Os vínculos cadastrados aparecerão aqui.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

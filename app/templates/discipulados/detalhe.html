@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Discipulado - {{ discipulado.pessoa.nome }} - SACP
+{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="page-label">
+                Discipulado
+            </span>
+
+            <span class="status-dot">
+                {{ discipulado.status|capitalize }}
+            </span>
+
+        </div>
+
+        <h1 class="page-title">
+            {{ discipulado.pessoa.nome }}
+        </h1>
+
+    </div>
+
+
+    {% if
+        current_user.perfil in ["admin", "pastoral"]
+        and discipulado.status == "ativo"
+    %}
+
+        <div class="person-header-actions">
+
+            <a
+                href="{{ url_for(
+                    'discipulados.editar',
+                    discipulado_id=discipulado.id
+                ) }}"
+                class="button button-light"
+            >
+                Editar
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="detail-layout">
+
+    <main class="detail-main">
+
+        <section class="panel">
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Pessoa
+                    </span>
+
+                    <a
+                        href="{{ url_for(
+                            'pessoas.detalhe',
+                            pessoa_id=discipulado.pessoa.id
+                        ) }}"
+                        class="info-value"
+                    >
+                        {{ discipulado.pessoa.nome }}
+                    </a>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Discipulador
+                    </span>
+
+                    <a
+                        href="{{ url_for(
+                            'pessoas.detalhe',
+                            pessoa_id=discipulado.discipulador.id
+                        ) }}"
+                        class="info-value"
+                    >
+                        {{ discipulado.discipulador.nome }}
+                    </a>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Início
+                    </span>
+
+                    <span class="info-value">
+                        {{ discipulado.data_inicio.strftime("%d/%m/%Y") }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Encerramento
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if discipulado.data_encerramento %}
+                            {{ discipulado.data_encerramento.strftime("%d/%m/%Y") }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        {% if discipulado.observacao %}
+
+            <section class="observation-panel">
+
+                <p class="page-label">
+                    Observação administrativa
+                </p>
+
+                <p>
+                    {{ discipulado.observacao }}
+                </p>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Status
+            </p>
+
+            <p class="side-status">
+
+                {% if discipulado.status == "ativo" %}
+                    Este discipulado está ativo.
+                {% else %}
+                    Este discipulado foi encerrado.
+                {% endif %}
+
+            </p>
+
+
+            {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                {% if discipulado.status == "ativo" %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'discipulados.encerrar',
+                            discipulado_id=discipulado.id
+                        ) }}"
+                    >
+
+                        {{ form_encerrar.hidden_tag() }}
+
+                        <button
+                            type="submit"
+                            class="button button-danger button-full"
+                        >
+                            Encerrar discipulado
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'discipulados.reabrir',
+                            discipulado_id=discipulado.id
+                        ) }}"
+                    >
+
+                        {{ form_reabrir.hidden_tag() }}
+
+                        <button
+                            type="submit"
+                            class="button button-primary button-full"
+                        >
+                            Reabrir discipulado
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

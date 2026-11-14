@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+
+        <p class="page-label">
+            Formação
+        </p>
+
+        <h1 class="page-title">
+            {{ titulo }}
+        </h1>
+
+    </div>
+
+    <a
+        href="{{ url_for('discipulados.listar') }}"
+        class="button button-light"
+    >
+        Voltar
+    </a>
+
+</section>
+
+
+<section class="form-panel">
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <div class="form-section">
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    {{ form.pessoa_id.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.pessoa_id(
+                        class="form-control"
+                    ) }}
+
+                    {% for erro in form.pessoa_id.errors %}
+                        <span class="form-error">
+                            {{ erro }}
+                        </span>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    {{ form.discipulador_id.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.discipulador_id(
+                        class="form-control"
+                    ) }}
+
+                    {% for erro in form.discipulador_id.errors %}
+                        <span class="form-error">
+                            {{ erro }}
+                        </span>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    {{ form.data_inicio.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.data_inicio(
+                        class="form-control"
+                    ) }}
+
+                </div>
+
+
+                <div class="form-group form-group-full">
+
+                    {{ form.observacao.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.observacao(
+                        class="form-control form-textarea"
+                    ) }}
+
+                    <span class="form-help">
+                        Registre apenas informações administrativas
+                        necessárias ao acompanhamento.
+                    </span>
+
+                    {% for erro in form.observacao.errors %}
+                        <span class="form-error">
+                            {{ erro }}
+                        </span>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('discipulados.listar') }}"
+                class="button button-light"
+            >
+                Cancelar
+            </a>
+
+            {{ form.submit(
+                class="button button-primary"
+            ) }}
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

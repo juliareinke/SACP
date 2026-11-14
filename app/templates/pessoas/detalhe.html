@@ -278,6 +278,98 @@
         {% endif %}
 
 
+        {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
+
+            <section class="future-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="page-label">
+                            Formação
+                        </p>
+
+                        <h2 class="section-title">
+                            Discipulado
+                        </h2>
+
+                    </div>
+
+
+                    {% if
+                        not discipulado_ativo
+                        and current_user.perfil in ["admin", "pastoral"]
+                    %}
+
+                        <a
+                            href="{{ url_for(
+                                'discipulados.criar',
+                                pessoa_id=pessoa.id
+                            ) }}"
+                            class="button button-light"
+                        >
+                            Novo discipulado
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if discipulado_ativo %}
+
+                    <section class="panel">
+
+                        <a
+                            href="{{ url_for(
+                                'discipulados.detalhe',
+                                discipulado_id=discipulado_ativo.id
+                            ) }}"
+                            class="followup-row"
+                        >
+
+                            <div>
+
+                                <span class="followup-title">
+                                    {{ discipulado_ativo.discipulador.nome }}
+                                </span>
+
+                                <span class="muted">
+                                    Discipulador
+                                </span>
+
+                            </div>
+
+
+                            <span class="muted">
+
+                                Desde
+                                {{ discipulado_ativo.data_inicio.strftime("%d/%m/%Y") }}
+
+                            </span>
+
+                        </a>
+
+                    </section>
+
+                {% else %}
+
+                    <div class="placeholder-panel">
+
+                        <p>
+                            Esta pessoa não possui discipulado ativo.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        {% endif %}
+
+
         <!-- ACOMPANHAMENTOS -->
 
         <div class="future-section">
