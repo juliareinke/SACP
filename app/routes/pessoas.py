@@ -118,6 +118,7 @@ def detalhe(pessoa_id):
     
     vinculo_pg = None
     discipulado_ativo = None
+    participacao_ebd = None
 
     if current_user.perfil in ["admin", "pastoral", "lider"]:
         vinculo_pg = db.session.scalar(
@@ -134,6 +135,13 @@ def detalhe(pessoa_id):
                 Discipulado.status == "ativo"
             )
         )
+        participacao_ebd = db.session.scalar(
+            db.select(ParticipacaoEBD)
+            .where(
+                ParticipacaoEBD.pessoa_id == pessoa.id,
+                ParticipacaoEBD.ativo.is_(True)
+            )
+        )
 
     return render_template(
         "pessoas/detalhe.html",
@@ -142,6 +150,7 @@ def detalhe(pessoa_id):
         reativar_form=reativar_form,
         vinculo_pg = vinculo_pg,
         discipulado_ativo=discipulado_ativo,
+        participacao_ebd=participacao_ebd,
         hoje=date.today()
     )
 

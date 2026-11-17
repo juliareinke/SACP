@@ -40,25 +40,64 @@
                     Pessoas
                 </a>
 
+
                 {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
 
-                    <a href="{{ url_for('acompanhamentos.listar') }}">
-                        Acompanhamentos
-                    </a>
+                    <div class="nav-dropdown">
 
-                    <a href="{{ url_for('tarefas.listar') }}">
-                        Tarefas
-                    </a>
+                        <button
+                            type="button"
+                            class="nav-dropdown-trigger"
+                        >
+                            Cuidado
+                            <span class="nav-dropdown-icon">+</span>
+                        </button>
 
-                    <a href="{{ url_for('pequenos_grupos.listar') }}">
-                        Pequenos Grupos
-                    </a>
+                        <div class="nav-dropdown-menu">
 
-                    <a href="{{ url_for('discipulados.listar') }}">
-                        Discipulados
-                    </a>
+                            <a href="{{ url_for('acompanhamentos.listar') }}">
+                                Acompanhamentos
+                            </a>
+
+                            <a href="{{ url_for('tarefas.listar') }}">
+                                Tarefas
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="nav-dropdown">
+
+                        <button
+                            type="button"
+                            class="nav-dropdown-trigger"
+                        >
+                            Comunidade
+                            <span class="nav-dropdown-icon">+</span>
+                        </button>
+
+                        <div class="nav-dropdown-menu">
+
+                            <a href="{{ url_for('pequenos_grupos.listar') }}">
+                                Pequenos Grupos
+                            </a>
+
+                            <a href="{{ url_for('discipulados.listar') }}">
+                                Discipulados
+                            </a>
+
+                            <a href="{{ url_for('ebd.listar') }}">
+                                EBD
+                            </a>
+
+                        </div>
+
+                    </div>
 
                 {% endif %}
+
 
                 {% if current_user.perfil == "admin" %}
 

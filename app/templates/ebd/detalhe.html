@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}{{ turma.nome }} - SACP{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="page-label">
+                Escola Bíblica Dominical
+            </span>
+
+            <span class="status-dot">
+
+                {% if turma.ativo %}
+                    Ativa
+                {% else %}
+                    Inativa
+                {% endif %}
+
+            </span>
+
+        </div>
+
+        <h1 class="page-title">
+            {{ turma.nome }}
+        </h1>
+
+    </div>
+
+
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <div class="person-header-actions">
+
+            <a
+                href="{{ url_for(
+                    'ebd.editar',
+                    turma_id=turma.id
+                ) }}"
+                class="button button-light"
+            >
+                Editar
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="detail-layout">
+
+    <main class="detail-main">
+
+        {% if turma.descricao %}
+
+            <section class="observation-panel">
+
+                <p class="page-label">
+                    Sobre a turma
+                </p>
+
+                <p>
+                    {{ turma.descricao }}
+                </p>
+
+            </section>
+
+        {% endif %}
+
+
+        <section class="future-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <p class="page-label">
+                        Participação
+                    </p>
+
+                    <h2 class="section-title">
+                        Participantes
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {% if
+                turma.ativo
+                and current_user.perfil in ["admin", "pastoral"]
+                and form_participante.pessoa_id.choices
+            %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'ebd.adicionar_participante',
+                        turma_id=turma.id
+                    ) }}"
+                    class="participant-form"
+                >
+
+                    {{ form_participante.hidden_tag() }}
+
+                    <div class="form-group">
+
+                        {{ form_participante.pessoa_id.label(
+                            class="form-label"
+                        ) }}
+
+                        {{ form_participante.pessoa_id(
+                            class="form-control"
+                        ) }}
+
+                    </div>
+
+                    {{ form_participante.submit(
+                        class="button button-primary"
+                    ) }}
+
+                </form>
+
+            {% endif %}
+
+
+            {% if participantes_ativos %}
+
+                <section class="panel">
+
+                    {% for vinculo in participantes_ativos %}
+
+                        <div class="followup-row">
+
+                            <div>
+
+                                <a
+                                    href="{{ url_for(
+                                        'pessoas.detalhe',
+                                        pessoa_id=vinculo.pessoa.id
+                                    ) }}"
+                                    class="followup-title"
+                                >
+                                    {{ vinculo.pessoa.nome }}
+                                </a>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="muted">
+                                    Desde
+                                    {{ vinculo.data_entrada.strftime("%d/%m/%Y") }}
+                                </span>
+
+
+                                {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'ebd.remover_participante',
+                                            turma_id=turma.id,
+                                            vinculo_id=vinculo.id
+                                        ) }}"
+                                        class="inline-form"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="link-button"
+                                        >
+                                            Remover
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </section>
+
+            {% else %}
+
+                <div class="placeholder-panel">
+
+                    <p>
+                        Nenhum participante vinculado a esta turma.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Status
+            </p>
+
+            <p class="side-status">
+
+                {% if turma.ativo %}
+                    Esta turma está ativa.
+                {% else %}
+                    Esta turma está inativa.
+                {% endif %}
+
+            </p>
+
+
+            {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                {% if turma.ativo %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'ebd.desativar',
+                            turma_id=turma.id
+                        ) }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="button button-danger button-full"
+                        >
+                            Desativar turma
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'ebd.reativar',
+                            turma_id=turma.id
+                        ) }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="button button-primary button-full"
+                        >
+                            Reativar turma
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

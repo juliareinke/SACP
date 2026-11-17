@@ -94,6 +94,132 @@ textarea {
     margin-left: auto;
 }
 
+/* DROPDOWNS DA NAVBAR */
+
+.nav-dropdown {
+    position: relative;
+    z-index: 100;
+}
+
+.nav-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 0;
+
+    color: white;
+    background: transparent;
+    border: 0;
+
+    font: inherit;
+    font-size: inherit;
+
+    opacity: 0.8;
+
+    cursor: pointer;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown:focus-within .nav-dropdown-trigger {
+    opacity: 1;
+}
+
+.nav-dropdown-icon {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1;
+
+    transition: transform 0.2s ease;
+}
+
+
+/* MENU */
+
+.nav-dropdown-menu {
+    position: absolute;
+
+    top: calc(100% + 18px);
+    left: -16px;
+
+    min-width: 190px;
+
+    display: none;
+
+    padding: 8px;
+
+    background: var(--text);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
+    z-index: 100;
+}
+
+.nav-dropdown::after {
+    content: "";
+
+    position: absolute;
+
+    top: 100%;
+    left: -16px;
+
+    width: 190px;
+    height: 18px;
+
+    background: transparent;
+}
+
+.topbar .nav-dropdown-menu a {
+    display: block;
+
+    padding: 11px 12px;
+
+    color: white;
+
+    opacity: 0.75;
+
+    white-space: nowrap;
+}
+
+.topbar .nav-dropdown-menu a:hover {
+    opacity: 1;
+
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* DESKTOP */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+        display: block;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-icon,
+    .nav-dropdown:focus-within .nav-dropdown-icon {
+        transform: rotate(45deg);
+    }
+
+}
+
+/* TOUCH / MOBILE */
+
+@media (hover: none), (pointer: coarse) {
+
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+        display: block;
+    }
+
+    .nav-dropdown:focus-within .nav-dropdown-icon {
+        transform: rotate(45deg);
+    }
+
+}
+
+/* NAVBAR USER INFO */
+
 .user-info {
     display: flex;
     flex-direction: column;

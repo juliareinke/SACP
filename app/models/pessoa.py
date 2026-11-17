@@ -54,6 +54,11 @@ class Pessoa(db.Model):
         foreign_keys="Discipulado.discipulador_id",
         back_populates="discipulador"
     )
+    
+    participacoes_ebd = db.relationship(
+        "ParticipacaoEBD",
+        back_populates="pessoa"
+    )
 
     def __repr__(self):
         return f"<Pessoa {self.nome}>"

@@ -369,6 +369,66 @@
 
         {% endif %}
 
+        {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
+
+            <section class="future-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="page-label">
+                            Formação
+                        </p>
+
+                        <h2 class="section-title">
+                            Escola Bíblica Dominical
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                {% if participacao_ebd %}
+
+                    <section class="panel">
+
+                        <a
+                            href="{{ url_for(
+                                'ebd.detalhe',
+                                turma_id=participacao_ebd.turma.id
+                            ) }}"
+                            class="followup-row"
+                        >
+
+                            <span class="followup-title">
+                                {{ participacao_ebd.turma.nome }}
+                            </span>
+
+                            <span class="muted">
+                                Desde
+                                {{ participacao_ebd.data_entrada.strftime("%d/%m/%Y") }}
+                            </span>
+
+                        </a>
+
+                    </section>
+
+                {% else %}
+
+                    <div class="placeholder-panel">
+                        <p>
+                            Esta pessoa não participa de uma turma de EBD atualmente.
+                        </p>
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        {% endif %}
+
 
         <!-- ACOMPANHAMENTOS -->
 

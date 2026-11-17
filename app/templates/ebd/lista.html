@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}EBD - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+
+        <p class="page-label">
+            Formação
+        </p>
+
+        <h1 class="page-title">
+            Escola Bíblica Dominical
+        </h1>
+
+        <p class="page-description">
+            Consulte as turmas e seus participantes.
+        </p>
+
+    </div>
+
+
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <a
+            href="{{ url_for('ebd.criar') }}"
+            class="button button-primary"
+        >
+            Nova turma
+        </a>
+
+    {% endif %}
+
+</section>
+
+
+<section class="panel">
+
+    {% if turmas %}
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Turma</th>
+                        <th>Descrição</th>
+                        <th>Participantes</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for turma in turmas %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ turma.nome }}
+                            </td>
+
+                            <td>
+
+                                {% if turma.descricao %}
+                                    {{ turma.descricao }}
+                                {% else %}
+                                    <span class="muted">
+                                        —
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {{
+                                    turma.participantes
+                                    |selectattr("ativo")
+                                    |list
+                                    |length
+                                }}
+
+                            </td>
+
+                            <td>
+
+                                {% if turma.ativo %}
+
+                                    <span class="tag">
+                                        Ativa
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="tag tag-inactive">
+                                        Inativa
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'ebd.detalhe',
+                                        turma_id=turma.id
+                                    ) }}"
+                                    class="action-link"
+                                >
+                                    Ver
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h2>
+                Nenhuma turma cadastrada
+            </h2>
+
+            <p>
+                As turmas de EBD aparecerão aqui.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}
