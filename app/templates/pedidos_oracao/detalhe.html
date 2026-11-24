@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Pedido de Oração - SACP{% endblock %}
+
+{% block content %}
+
+<section class="person-header">
+
+    <div>
+
+        <div class="person-meta">
+
+            <span class="page-label">
+                Pedido de oração
+            </span>
+
+            <span class="status-dot">
+                {{ pedido.status|capitalize }}
+            </span>
+
+        </div>
+
+        <h1 class="page-title">
+            {{ pedido.motivo }}
+        </h1>
+
+    </div>
+
+
+    {% if pedido.status == "ativo" %}
+
+        <div class="person-header-actions">
+
+            <a
+                href="{{ url_for(
+                    'pedidos_oracao.editar',
+                    pedido_id=pedido.id
+                ) }}"
+                class="button button-light"
+            >
+                Editar
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="detail-layout">
+
+    <main class="detail-main">
+
+        <section class="panel">
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Pessoa
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if pedido.pessoa %}
+
+                            <a href="{{ url_for(
+                                'pessoas.detalhe',
+                                pessoa_id=pedido.pessoa.id
+                            ) }}">
+                                {{ pedido.pessoa.nome }}
+                            </a>
+
+                        {% else %}
+                            Não vinculada
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Responsável
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if pedido.responsavel %}
+                            {{ pedido.responsavel.nome }}
+                        {% else %}
+                            Não definido
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Data do pedido
+                    </span>
+
+                    <span class="info-value">
+                        {{ pedido.data_pedido.strftime("%d/%m/%Y") }}
+                    </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                    <span class="info-label">
+                        Encerramento
+                    </span>
+
+                    <span class="info-value">
+
+                        {% if pedido.data_encerramento %}
+                            {{ pedido.data_encerramento.strftime("%d/%m/%Y") }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        {% if pedido.observacao %}
+
+            <section class="observation-panel">
+
+                <p class="page-label">
+                    Observação
+                </p>
+
+                <p>
+                    {{ pedido.observacao }}
+                </p>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+
+    <aside class="detail-sidebar">
+
+        <div class="side-panel">
+
+            <p class="page-label">
+                Status
+            </p>
+
+            <p class="side-status">
+
+                {% if pedido.status == "ativo" %}
+                    Este pedido permanece em acompanhamento.
+                {% else %}
+                    Este pedido foi encerrado.
+                {% endif %}
+
+            </p>
+
+
+            {% if pedido.status == "ativo" %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'pedidos_oracao.encerrar',
+                        pedido_id=pedido.id
+                    ) }}"
+                >
+
+                    {{ form_encerrar.hidden_tag() }}
+
+                    <button
+                        type="submit"
+                        class="button button-danger button-full"
+                    >
+                        Encerrar pedido
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'pedidos_oracao.reabrir',
+                        pedido_id=pedido.id
+                    ) }}"
+                >
+
+                    {{ form_reabrir.hidden_tag() }}
+
+                    <button
+                        type="submit"
+                        class="button button-primary button-full"
+                    >
+                        Reabrir pedido
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

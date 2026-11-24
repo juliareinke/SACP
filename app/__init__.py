@@ -40,6 +40,7 @@ def create_app():
     from app.routes.pequenos_grupos import pequenos_grupos_bp
     from app.routes.discipulados import discipulados_bp
     from app.routes.ebd import ebd_bp
+    from app.routes.pedidos_oracao import pedidos_oracao_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(pessoas_bp)
@@ -50,6 +51,7 @@ def create_app():
     app.register_blueprint(pequenos_grupos_bp)
     app.register_blueprint(discipulados_bp)
     app.register_blueprint(ebd_bp)
+    app.register_blueprint(pedidos_oracao_bp)
 
     @app.errorhandler(403)
     def forbidden(error):

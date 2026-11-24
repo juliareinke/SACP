@@ -2,7 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user
 from app import db
 from app.forms.pessoa import PessoaForm, InativarPessoaForm, ReativarPessoaForm
-from app.models import Pessoa, PessoaPequenoGrupo, Discipulado
+from app.models import Pessoa, PessoaPequenoGrupo, Discipulado, ParticipacaoEBD, PedidoOracao
 from datetime import date
 from app.permissions import roles_required
 
@@ -142,6 +142,23 @@ def detalhe(pessoa_id):
                 ParticipacaoEBD.ativo.is_(True)
             )
         )
+        
+    pedidos_oracao_ativos = []
+
+    if current_user.perfil in [
+        "admin",
+        "pastoral"
+    ]:
+        pedidos_oracao_ativos = db.session.execute(
+            db.select(PedidoOracao)
+            .where(
+                PedidoOracao.pessoa_id == pessoa.id,
+                PedidoOracao.status == "ativo"
+            )
+            .order_by(
+                PedidoOracao.data_pedido.desc()
+            )
+        ).scalars().all()
 
     return render_template(
         "pessoas/detalhe.html",
@@ -151,6 +168,7 @@ def detalhe(pessoa_id):
         vinculo_pg = vinculo_pg,
         discipulado_ativo=discipulado_ativo,
         participacao_ebd=participacao_ebd,
+        pedidos_oracao_ativos=pedidos_oracao_ativos,
         hoje=date.today()
     )
 
