@@ -112,9 +112,8 @@ def editar(usuario_id):
             usuario.perfil = form.perfil.data
 
             if form.nova_senha.data:
-                usuario.definir_senha(
-                    form.nova_senha.data
-                )
+                usuario.definir_senha(form.nova_senha.data)
+                usuario.versao_sessao += 1
 
             db.session.commit()
 
@@ -154,9 +153,11 @@ def desativar(usuario_id):
             url_for("usuarios.listar")
         )
 
-    usuario.ativo = False
+    if usuario.ativo:
+        usuario.ativo = False
+        usuario.versao_sessao += 1
 
-    db.session.commit()
+        db.session.commit()
 
     flash(
         "Usuário desativado.",

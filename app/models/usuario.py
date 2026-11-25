@@ -36,6 +36,13 @@ class Usuario(UserMixin, db.Model):
         nullable=False,
         server_default=db.func.now()
     )
+    
+    versao_sessao = db.Column(
+        db.Integer,
+        nullable=False,
+        default=1,
+        server_default="1"
+    )
 
     acompanhamentos = db.relationship(
         "Acompanhamento",
@@ -51,6 +58,10 @@ class Usuario(UserMixin, db.Model):
         "Tarefa",
         back_populates="responsavel"
     )
+    
+    @property
+    def is_active(self):
+        return bool(self.ativo)
 
     def definir_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
@@ -60,3 +71,6 @@ class Usuario(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<Usuario {self.email}>"
+    
+    def get_id(self):
+        return f"{self.id}:{self.versao_sessao}"

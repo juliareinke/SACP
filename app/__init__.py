@@ -29,7 +29,24 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return db.session.get(Usuario, int(user_id))
+        try:
+            id_texto, versao_texto = user_id.split(":", 1)
+
+            usuario_id = int(id_texto)
+            versao = int(versao_texto)
+
+        except (ValueError, TypeError, AttributeError):
+            return None
+
+        usuario = db.session.get(Usuario, usuario_id)
+
+        if usuario is None or not usuario.ativo:
+            return None
+
+        if usuario.versao_sessao != versao:
+            return None
+
+        return usuario
 
     from app.routes import main_bp
     from app.routes.pessoas import pessoas_bp
