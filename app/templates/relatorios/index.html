@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios - SACP{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+
+    <div>
+
+        <p class="page-label">
+            Gestão e acompanhamento
+        </p>
+
+        <h1 class="page-title">
+            Relatórios
+        </h1>
+
+        <p class="page-description">
+            Consulte as atividades registradas no sistema
+            e acompanhe os resultados por período.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- FILTRO POR PERÍODO -->
+
+<form
+    method="GET"
+    action="{{ url_for('relatorios.index') }}"
+    class="reports-filters"
+>
+
+    <div class="form-group">
+
+        <label for="inicio" class="form-label">
+            Data inicial
+        </label>
+
+        <input
+            type="date"
+            id="inicio"
+            name="inicio"
+            value="{{ periodo_inicio.isoformat() }}"
+            class="form-control"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="fim" class="form-label">
+            Data final
+        </label>
+
+        <input
+            type="date"
+            id="fim"
+            name="fim"
+            value="{{ periodo_fim.isoformat() }}"
+            class="form-control"
+            required
+        >
+
+    </div>
+
+
+    <button
+        type="submit"
+        class="button button-primary"
+    >
+        Aplicar filtros
+    </button>
+
+</form>
+
+
+<!-- RESULTADOS -->
+
+<section class="reports-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <p class="page-label">
+                Visão do período
+            </p>
+
+            <h2 class="section-title">
+                Resumo de atividades
+            </h2>
+
+        </div>
+
+        <div class="reports-actions">
+
+            <span class="muted reports-period">
+
+                {{ periodo_inicio.strftime("%d/%m/%Y") }}
+
+                até
+
+                {{ periodo_fim.strftime("%d/%m/%Y") }}
+
+            </span>
+
+            <a
+                href="{{ url_for(
+                    'relatorios.exportar',
+                    inicio=periodo_inicio.isoformat(),
+                    fim=periodo_fim.isoformat()
+                ) }}"
+                class="button button-light"
+            >
+                Exportar CSV
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-stats reports-stats">
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Visitantes cadastrados
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.visitantes }}
+            </strong>
+
+            <span class="stat-link">
+                Situação atual: visitante
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Acompanhamentos iniciados
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.acompanhamentos_iniciados }}
+            </strong>
+
+            <span class="stat-link">
+                Novos acompanhamentos
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Acompanhamentos encerrados
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.acompanhamentos_encerrados }}
+            </strong>
+
+            <span class="stat-link">
+                Encerramentos no período
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Registros de acompanhamento
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.registros }}
+            </strong>
+
+            <span class="stat-link">
+                Atividades registradas
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Visitas registradas
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.visitas }}
+            </strong>
+
+            <span class="stat-link">
+                Registros do tipo visita
+            </span>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Tarefas concluídas
+            </span>
+
+            <strong class="stat-number">
+                {{ indicadores.tarefas_concluidas }}
+            </strong>
+
+            <span class="stat-link">
+                Atividades finalizadas
+            </span>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<section class="future-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <p class="page-label">
+                Atividades realizadas
+            </p>
+
+            <h2 class="section-title">
+                Registros por tipo
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <section class="panel">
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>Tipo de registro</th>
+                        <th>Quantidade</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in tipos_registro %}
+
+                        <tr>
+
+                            <td class="person-name">
+                                {{ item.nome }}
+                            </td>
+
+                            <td>
+                                {{ item.total }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</section>
+
+
+<section class="reports-note">
+
+    <p class="page-label">
+        Sobre os indicadores
+    </p>
+
+    <p>
+        Os resultados são calculados a partir dos registros
+        existentes no sistema, considerando o período selecionado.
+        As visitas estão incluídas no total de registros de
+        acompanhamento.
+    </p>
+
+    <p>
+        A contagem de visitantes considera a situação atual
+        da pessoa. Os relatórios não exibem observações
+        pastorais ou informações pessoais detalhadas.
+    </p>
+
+</section>
+
+{% endblock %}
