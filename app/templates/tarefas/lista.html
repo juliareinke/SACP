@@ -21,12 +21,16 @@
         </p>
     </div>
 
-    <a
-        href="{{ url_for('tarefas.criar') }}"
-        class="button button-light"
-    >
-        + Nova tarefa
-    </a>
+    {% if current_user.perfil in ["admin", "pastoral"] %}
+
+        <a
+            href="{{ url_for('tarefas.criar') }}"
+            class="button button-primary"
+        >
+            + Nova tarefa
+        </a>
+
+    {% endif %}
 
 </section>
 

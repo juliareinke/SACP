@@ -432,113 +432,9 @@
 
         <!-- ACOMPANHAMENTOS -->
 
-        <div class="future-section">
+        {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
 
-            <div class="section-heading">
-
-                <div>
-
-                    <p class="page-label">
-                        Cuidado pastoral
-                    </p>
-
-                    <h2 class="section-title">
-                        Acompanhamentos
-                    </h2>
-
-                </div>
-
-
-                {% if pessoa.ativo %}
-
-                    <a
-                        href="{{ url_for(
-                            'acompanhamentos.criar',
-                            pessoa_id=pessoa.id
-                        ) }}"
-                        class="button button-light"
-                    >
-                        + Novo acompanhamento
-                    </a>
-
-                {% endif %}
-
-            </div>
-
-
-            {% if pessoa.acompanhamentos %}
-
-                <div class="panel">
-
-                    {% for acompanhamento in
-                        pessoa.acompanhamentos
-                        |sort(attribute="data_inicio", reverse=true)
-                    %}
-
-                        <a
-                            href="{{ url_for(
-                                'acompanhamentos.detalhe',
-                                acompanhamento_id=acompanhamento.id
-                            ) }}"
-                            class="followup-row"
-                        >
-
-                            <div>
-
-                                <span class="followup-title">
-
-                                    {{ acompanhamento.tipo
-                                        |replace("_", " ")
-                                        |capitalize }}
-
-                                </span>
-
-                                <span class="muted">
-
-                                    {{ acompanhamento.data_inicio.strftime(
-                                        "%d/%m/%Y"
-                                    ) }}
-
-                                </span>
-
-                            </div>
-
-
-                            <div class="followup-meta">
-
-                                <span class="tag">
-                                    {{ acompanhamento.prioridade|capitalize }}
-                                </span>
-
-                                <span>
-                                    {{ acompanhamento.status|capitalize }}
-                                </span>
-
-                            </div>
-
-                        </a>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <div class="placeholder-panel">
-
-                    <p>
-                        Nenhum acompanhamento registrado.
-                    </p>
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-        {% if current_user.perfil in ["admin", "pastoral"] %}
-
-            <section class="future-section">
+            <div class="future-section">
 
                 <div class="section-heading">
 
@@ -549,184 +445,305 @@
                         </p>
 
                         <h2 class="section-title">
-                            Pedidos de Oração
+                            Acompanhamentos
                         </h2>
 
                     </div>
 
 
-                    <a
-                        href="{{ url_for(
-                            'pedidos_oracao.criar',
-                            pessoa_id=pessoa.id
-                        ) }}"
-                        class="button button-light"
-                    >
-                        Novo pedido
-                    </a>
+                    {% if pessoa.ativo and current_user.perfil in ["admin", "pastoral"] %}
+
+                        <a
+                            href="{{ url_for(
+                                'acompanhamentos.criar',
+                                pessoa_id=pessoa.id
+                            ) }}"
+                            class="button button-light"
+                        >
+                            + Novo acompanhamento
+                        </a>
+
+                    {% endif %}
 
                 </div>
 
 
-                {% if pedidos_oracao_ativos %}
+                {% if acompanhamentos_visiveis %}
 
-                    <section class="panel">
+                    <div class="panel">
 
-                        {% for pedido in pedidos_oracao_ativos %}
+                        {% for acompanhamento in
+                            acompanhamentos_visiveis
+                            |sort(attribute="data_inicio", reverse=true)
+                        %}
 
                             <a
                                 href="{{ url_for(
-                                    'pedidos_oracao.detalhe',
-                                    pedido_id=pedido.id
+                                    'acompanhamentos.detalhe',
+                                    acompanhamento_id=acompanhamento.id
                                 ) }}"
                                 class="followup-row"
                             >
 
-                                <span class="followup-title">
-                                    {{ pedido.motivo }}
-                                </span>
+                                <div>
 
-                                <span class="muted">
-                                    {{ pedido.data_pedido.strftime("%d/%m/%Y") }}
-                                </span>
+                                    <span class="followup-title">
+
+                                        {{ acompanhamento.tipo
+                                            |replace("_", " ")
+                                            |capitalize }}
+
+                                    </span>
+
+                                    <span class="muted">
+
+                                        {{ acompanhamento.data_inicio.strftime(
+                                            "%d/%m/%Y"
+                                        ) }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="followup-meta">
+
+                                    <span class="tag">
+                                        {{ acompanhamento.prioridade|capitalize }}
+                                    </span>
+
+                                    <span>
+                                        {{ acompanhamento.status|capitalize }}
+                                    </span>
+
+                                </div>
 
                             </a>
 
                         {% endfor %}
 
-                    </section>
+                    </div>
 
                 {% else %}
 
                     <div class="placeholder-panel">
 
                         <p>
-                            Nenhum pedido de oração ativo.
+                            {% if current_user.perfil == "lider" %}
+                                Nenhum acompanhamento atribuído a você para esta pessoa.
+                            {% else %}
+                                Nenhum acompanhamento registrado.
+                            {% endif %}
                         </p>
 
                     </div>
 
                 {% endif %}
 
-            </section>
+            </div>
+
+            {% if current_user.perfil in ["admin", "pastoral"] %}
+
+                <section class="future-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <p class="page-label">
+                                Cuidado pastoral
+                            </p>
+
+                            <h2 class="section-title">
+                                Pedidos de Oração
+                            </h2>
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for(
+                                'pedidos_oracao.criar',
+                                pessoa_id=pessoa.id
+                            ) }}"
+                            class="button button-light"
+                        >
+                            Novo pedido
+                        </a>
+
+                    </div>
+
+
+                    {% if pedidos_oracao_ativos %}
+
+                        <section class="panel">
+
+                            {% for pedido in pedidos_oracao_ativos %}
+
+                                <a
+                                    href="{{ url_for(
+                                        'pedidos_oracao.detalhe',
+                                        pedido_id=pedido.id
+                                    ) }}"
+                                    class="followup-row"
+                                >
+
+                                    <span class="followup-title">
+                                        {{ pedido.motivo }}
+                                    </span>
+
+                                    <span class="muted">
+                                        {{ pedido.data_pedido.strftime("%d/%m/%Y") }}
+                                    </span>
+
+                                </a>
+
+                            {% endfor %}
+
+                        </section>
+
+                    {% else %}
+
+                        <div class="placeholder-panel">
+
+                            <p>
+                                Nenhum pedido de oração ativo.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </section>
+
+            {% endif %}
 
         {% endif %}
 
 
         <!-- TAREFAS -->
+        
 
-        <div class="future-section">
+        {% if current_user.perfil in ["admin", "pastoral", "lider"] %}
 
-            {% set tarefas_pendentes =
-                pessoa.tarefas
-                |selectattr("status", "equalto", "pendente")
-                |sort(attribute="prazo")
-                |list
-            %}
+            <div class="future-section">
+
+                {% set tarefas_pendentes =
+                    tarefas_visiveis
+                    |selectattr("status", "equalto", "pendente")
+                    |sort(attribute="prazo")
+                    |list
+                %}
 
 
-            <div class="section-heading">
+                <div class="section-heading">
 
-                <div>
+                    <div>
 
-                    <p class="page-label">
-                        Pendências
-                    </p>
+                        <p class="page-label">
+                            Pendências
+                        </p>
 
-                    <h2 class="section-title">
-                        Tarefas
-                    </h2>
+                        <h2 class="section-title">
+                            Tarefas
+                        </h2>
+
+                    </div>
+
+
+                    {% if pessoa.ativo and current_user.perfil in ["admin", "pastoral"] %}
+
+                        <a
+                            href="{{ url_for(
+                                'tarefas.criar',
+                                pessoa_id=pessoa.id
+                            ) }}"
+                            class="button button-light"
+                        >
+                            + Nova tarefa
+                        </a>
+
+                    {% endif %}
 
                 </div>
 
 
-                {% if pessoa.ativo %}
+                {% if tarefas_pendentes %}
 
-                    <a
-                        href="{{ url_for(
-                            'tarefas.criar',
-                            pessoa_id=pessoa.id
-                        ) }}"
-                        class="button button-light"
-                    >
-                        + Nova tarefa
-                    </a>
+                    <div class="panel">
+
+                        {% for tarefa in tarefas_pendentes %}
+
+                            {% set atrasada =
+                                tarefa.prazo < hoje
+                            %}
+
+                            <a
+                                href="{{ url_for(
+                                    'tarefas.detalhe',
+                                    tarefa_id=tarefa.id
+                                ) }}"
+                                class="task-row"
+                            >
+
+                                <div>
+
+                                    <span class="task-title">
+                                        {{ tarefa.titulo }}
+                                    </span>
+
+                                    <span class="muted">
+
+                                        Prazo
+                                        {{ tarefa.prazo.strftime("%d/%m/%Y") }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <div class="task-meta">
+
+                                    {% if atrasada %}
+
+                                        <span class="tag task-overdue">
+                                            Atrasada
+                                        </span>
+
+                                    {% endif %}
+
+
+                                    <span class="tag">
+                                        {{ tarefa.prioridade|capitalize }}
+                                    </span>
+
+                                </div>
+
+                            </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="placeholder-panel">
+
+                        <p>
+                            {% if current_user.perfil == "lider" %}
+                                Nenhuma tarefa pendente atribuída a você.
+                            {% else %}
+                                Nenhuma tarefa pendente.
+                            {% endif %}
+                        </p>
+
+                    </div>
 
                 {% endif %}
 
             </div>
 
-
-            {% if tarefas_pendentes %}
-
-                <div class="panel">
-
-                    {% for tarefa in tarefas_pendentes %}
-
-                        {% set atrasada =
-                            tarefa.prazo < hoje
-                        %}
-
-                        <a
-                            href="{{ url_for(
-                                'tarefas.detalhe',
-                                tarefa_id=tarefa.id
-                            ) }}"
-                            class="task-row"
-                        >
-
-                            <div>
-
-                                <span class="task-title">
-                                    {{ tarefa.titulo }}
-                                </span>
-
-                                <span class="muted">
-
-                                    Prazo
-                                    {{ tarefa.prazo.strftime("%d/%m/%Y") }}
-
-                                </span>
-
-                            </div>
-
-
-                            <div class="task-meta">
-
-                                {% if atrasada %}
-
-                                    <span class="tag task-overdue">
-                                        Atrasada
-                                    </span>
-
-                                {% endif %}
-
-
-                                <span class="tag">
-                                    {{ tarefa.prioridade|capitalize }}
-                                </span>
-
-                            </div>
-
-                        </a>
-
-                    {% endfor %}
-
-                </div>
-
-            {% else %}
-
-                <div class="placeholder-panel">
-
-                    <p>
-                        Nenhuma tarefa pendente.
-                    </p>
-
-                </div>
-
-            {% endif %}
-
-        </div>
+        {% endif %}
 
     </section>
 
@@ -755,42 +772,46 @@
 
             </p>
 
+            {% if current_user.perfil in ["admin", "pastoral"] %}
 
-            {% if pessoa.ativo %}
+                {% if pessoa.ativo %}
 
-                <form
-                    method="POST"
-                    action="{{ url_for(
-                        'pessoas.inativar',
-                        pessoa_id=pessoa.id
-                    ) }}"
-                >
 
-                    {{ inativar_form.hidden_tag() }}
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'pessoas.inativar',
+                            pessoa_id=pessoa.id
+                        ) }}"
+                    >
 
-                    {{ inativar_form.submit(
-                        class="button button-danger button-full"
-                    ) }}
+                        {{ inativar_form.hidden_tag() }}
 
-                </form>
+                        {{ inativar_form.submit(
+                            class="button button-danger button-full"
+                        ) }}
 
-            {% else %}
+                    </form>
 
-                <form
-                    method="POST"
-                    action="{{ url_for(
-                        'pessoas.reativar',
-                        pessoa_id=pessoa.id
-                    ) }}"
-                >
+                {% else %}
 
-                    {{ reativar_form.hidden_tag() }}
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'pessoas.reativar',
+                            pessoa_id=pessoa.id
+                        ) }}"
+                    >
 
-                    {{ reativar_form.submit(
-                        class="button button-primary button-full"
-                    ) }}
+                        {{ reativar_form.hidden_tag() }}
 
-                </form>
+                        {{ reativar_form.submit(
+                            class="button button-primary button-full"
+                        ) }}
+
+                    </form>
+
+                {% endif %}
 
             {% endif %}
 

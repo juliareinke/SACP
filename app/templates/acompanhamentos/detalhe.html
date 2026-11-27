@@ -52,7 +52,7 @@
         </a>
 
 
-        {% if acompanhamento.status == "ativo" %}
+        {% if acompanhamento.status == "ativo" and current_user.perfil in ["admin", "pastoral"] %}
 
             <a
                 href="{{ url_for(
@@ -242,7 +242,7 @@
         <div class="future-section">
 
             {% set tarefas_pendentes =
-                acompanhamento.tarefas
+                tarefas_visiveis
                 |selectattr("status", "equalto", "pendente")
                 |sort(attribute="prazo")
                 |list
@@ -264,7 +264,7 @@
                 </div>
 
 
-                {% if acompanhamento.status == "ativo" %}
+                {% if acompanhamento.status == "ativo" and current_user.perfil in ["admin", "pastoral"] %}
 
                     <a
                         href="{{ url_for(
@@ -348,7 +348,11 @@
                 <div class="placeholder-panel">
 
                     <p>
-                        Nenhuma tarefa pendente neste acompanhamento.
+                        {% if current_user.perfil == "lider" %}
+                            Nenhuma tarefa pendente atribuída a você neste acompanhamento.
+                        {% else %}
+                            Nenhuma tarefa pendente neste acompanhamento.
+                        {% endif %}
                     </p>
 
                 </div>
@@ -377,7 +381,7 @@
                 </div>
 
 
-                {% if acompanhamento.status == "ativo" %}
+                {% if acompanhamento.status == "ativo" and current_user.perfil in ["admin", "pastoral"] %}
 
                     <a
                         href="{{ url_for(
@@ -499,7 +503,7 @@
             </p>
 
 
-            {% if acompanhamento.status == "ativo" %}
+            {% if acompanhamento.status == "ativo" and current_user.perfil in ["admin", "pastoral"] %}
 
                 <form
                     method="POST"
